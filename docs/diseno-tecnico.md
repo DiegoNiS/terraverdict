@@ -2,6 +2,10 @@
 
 > Documento para el equipo y para el jurado técnico. Define **qué** se construye, **cómo** y **por qué**, con las ecuaciones, los contratos de datos, las decisiones de arquitectura y la estrategia de pruebas. Lo marcado como *por confirmar* no se usa en conclusiones hasta verificarlo.
 
+> **Correspondencia con los módulos de la propuesta final:** M0 ingesta trazable (sección 4) · M1 Matriz de Relevancia ([documento propio](modulo-relevancia.md)) · M2 tendencias y Sello de Confianza (5.1) · M3 gemelo y atribución (5.2–5.6) · M4 anticipación (5.7 y 5.9) · M5 cuenca y decisión (5.8 y 5.10) · M6 interfaz, API, MCP e IA (7, 7b y 8).
+>
+> **Datos verificados el 14-11-2026** ([informe](verificacion/README.md)): IMERG V07 Final está publicado de **1998-01 a 2025-09**; Early y Late están vigentes al día y **nunca se mezclan con Final en una misma serie de tendencia**. MOD16A2GF se publica una vez al año. NISAR tiene solo 6 gránulos sobre la cuenca. La estación GHCN de Arequipa está demasiado incompleta para tendencias.
+
 ## Contenido
 
 1. [Alcance y no objetivos](#1-alcance-y-no-objetivos)
@@ -85,6 +89,7 @@ Todo resultado publicable es un **Expediente** inmutable, identificado por un ha
 | **ADR-8** | **Preregistro** de parámetros y umbrales con hash | Ajustar después de ver los resultados | Evita ajustar el análisis para obtener la respuesta deseada; es auditable |
 | **ADR-9** | Formatos abiertos: **Parquet, GeoJSON, COG y catálogo STAC** | Base de datos | Hosting estático, interoperable con QGIS y Python |
 | **ADR-10** | **Claude vía API** (`claude-opus-5-5`) solo para la interfaz conversacional, la digitalización de PDF, la extracción de afirmaciones y la redacción de borradores, con un verificador numérico determinista | Modelo de lenguaje que calcula o decide; ningún modelo de lenguaje | Aporta acceso en lenguaje natural y datos de verdad terrestre que no existen digitalizados, sin entrar en la cadena de cálculo |
+| **ADR-11** | **Matriz de Relevancia con plantillas por problema** (candidatas definidas por la física) en lugar de rastrear todas las variables disponibles | Rastreo automático de cientos de variables; un modelo fundacional | Evita hallazgos falsos por pruebas múltiples, es explicable y escala agregando plantillas |
 
 ---
 
@@ -441,7 +446,7 @@ CI con GitHub Actions: lint, tipos (`mypy`, `tsc`), pruebas y validación de con
 - **Durante la temporada de lluvias:** actualización semanal del estado inicial del ESP con IMERG Late Run y la última escena Landsat o HLS sin nubes.
 - **Monitoreo:** cada corrida escribe un manifiesto (entradas, hashes, duración, meses descartados por nubes). Una alerta salta si un contrato falla o si la fracción válida cae bajo el umbral.
 - **Hosting:** sitio estático gratuito; la API y el MCP en un contenedor pequeño, opcional porque el núcleo funciona sin ellos.
-- **Costo:** US$ 0 en datos y hosting estático; GEE con uso no comercial.
+- **Costo:** US$ 0 en datos y hosting estático; Google Earth Engine solo como acelerador opcional, con uso no comercial.
 
 ---
 

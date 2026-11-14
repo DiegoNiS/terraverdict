@@ -1,0 +1,525 @@
+{
+ "generado_utc": "2026-11-14T17:24:47+00:00",
+ "bbox_cuenca": "-71.6,-16.5,-70.9,-15.3",
+ "resultados": {
+  "cmr:imerg_final_mensual": {
+   "ok": true,
+   "datos": {
+    "existe": true,
+    "titulo": "GPM IMERG Final Precipitation L3 1 month 0.1 degree x 0.1 degree V07 (GPM_3IMERGM)",
+    "centro": "GES_DISC",
+    "inicio": "1998-01-01",
+    "fin": "2025-09-30",
+    "granulos_sobre_cuenca": 333,
+    "ultimo_granulo_cuenca": "2025-09-01"
+   }
+  },
+  "cmr:imerg_final_diaria": {
+   "ok": true,
+   "datos": {
+    "existe": true,
+    "titulo": "GPM IMERG Final Precipitation L3 1 day 0.1 degree x 0.1 degree V07 (GPM_3IMERGDF)",
+    "centro": "GES_DISC",
+    "inicio": "1998-01-01",
+    "fin": "2025-09-30",
+    "granulos_sobre_cuenca": 10135,
+    "ultimo_granulo_cuenca": "2025-09-30"
+   }
+  },
+  "cmr:imerg_early_30min": {
+   "ok": true,
+   "datos": {
+    "existe": true,
+    "titulo": "GPM IMERG Early Precipitation L3 Half Hourly 0.1 degree x 0.1 degree V07 (GPM_3IMERGHHE)",
+    "centro": "GES_DISC",
+    "inicio": "1998-01-01",
+    "fin": "vigente",
+    "granulos_sobre_cuenca": 506136,
+    "ultimo_granulo_cuenca": "2026-11-14"
+   }
+  },
+  "cmr:imerg_late_30min": {
+   "ok": true,
+   "datos": {
+    "existe": true,
+    "titulo": "GPM IMERG Late Precipitation L3 Half Hourly 0.1 degree x 0.1 degree V07 (GPM_3IMERGHHL)",
+    "centro": "GES_DISC",
+    "inicio": "1998-01-01",
+    "fin": "vigente",
+    "granulos_sobre_cuenca": 506116,
+    "ultimo_granulo_cuenca": "2026-11-14"
+   }
+  },
+  "cmr:merra2_superficie_mensual": {
+   "ok": true,
+   "datos": {
+    "existe": true,
+    "titulo": "MERRA-2 tavgM_2d_slv_Nx: 2d,Monthly mean,Time-Averaged,Single-Level,Assimilation,Single-Level Diagnostics 0.625 x 0.5 degree V5.12.4 (M2TMNXSLV)",
+    "centro": "GES_DISC",
+    "inicio": "1980-01-01",
+    "fin": "vigente",
+    "granulos_sobre_cuenca": 561,
+    "ultimo_granulo_cuenca": "2026-09-01"
+   }
+  },
+  "cmr:merra2_flujos_mensual": {
+   "ok": true,
+   "datos": {
+    "existe": true,
+    "titulo": "MERRA-2 tavgM_2d_flx_Nx: 2d,Monthly mean,Time-Averaged,Single-Level,Assimilation,Surface Flux Diagnostics 0.625 x 0.5 degree V5.12.4 (M2TMNXFLX)",
+    "centro": "GES_DISC",
+    "inicio": "1980-01-01",
+    "fin": "vigente",
+    "granulos_sobre_cuenca": 561,
+    "ultimo_granulo_cuenca": "2026-09-01"
+   }
+  },
+  "cmr:gldas21_noah_mensual": {
+   "ok": true,
+   "datos": {
+    "existe": true,
+    "titulo": "GLDAS Noah Land Surface Model L4 monthly 0.25 x 0.25 degree V2.1 (GLDAS_NOAH025_M)",
+    "centro": "GES_DISC",
+    "inicio": "2000-01-01",
+    "fin": "vigente",
+    "granulos_sobre_cuenca": 319,
+    "ultimo_granulo_cuenca": "2026-07-01"
+   }
+  },
+  "cmr:gldas20_noah_mensual": {
+   "ok": true,
+   "datos": {
+    "existe": true,
+    "titulo": "GLDAS Noah Land Surface Model L4 monthly 0.25 x 0.25 degree V2.0 (GLDAS_NOAH025_M)",
+    "centro": "GES_DISC",
+    "inicio": "1948-01-01",
+    "fin": "2014-12-31",
+    "granulos_sobre_cuenca": 804,
+    "ultimo_granulo_cuenca": "2014-12-01"
+   }
+  },
+  "cmr:fldas_chirps_mensual": {
+   "ok": true,
+   "datos": {
+    "existe": true,
+    "titulo": "FLDAS Noah Land Surface Model L4 Global Monthly 0.1 x 0.1 degree (MERRA-2 and CHIRPS) V001 (FLDAS_NOAH01_C_GL_M)",
+    "centro": "GES_DISC",
+    "inicio": "1982-01-01",
+    "fin": "vigente",
+    "granulos_sobre_cuenca": 537,
+    "ultimo_granulo_cuenca": "2026-09-01"
+   }
+  },
+  "cmr:modis_lst_terra_8d": {
+   "ok": true,
+   "datos": {
+    "existe": true,
+    "titulo": "MODIS/Terra Land Surface Temperature/Emissivity 8-Day L3 Global 1km SIN Grid V061",
+    "centro": "LPCLOUD",
+    "inicio": "2000-02-18",
+    "fin": "vigente",
+    "granulos_sobre_cuenca": 1226,
+    "ultimo_granulo_cuenca": "2026-11-01"
+   }
+  },
+  "cmr:modis_lst_aqua_8d": {
+   "ok": true,
+   "datos": {
+    "existe": true,
+    "titulo": "MODIS/Aqua Land Surface Temperature/Emissivity 8-Day L3 Global 1km SIN Grid V061",
+    "centro": "LPCLOUD",
+    "inicio": "2002-07-04",
+    "fin": "vigente",
+    "granulos_sobre_cuenca": 1119,
+    "ultimo_granulo_cuenca": "2026-11-01"
+   }
+  },
+  "cmr:modis_ndvi_terra_16d": {
+   "ok": true,
+   "datos": {
+    "existe": true,
+    "titulo": "MODIS/Terra Vegetation Indices 16-Day L3 Global 250m SIN Grid V061",
+    "centro": "LPCLOUD",
+    "inicio": "2000-02-18",
+    "fin": "vigente",
+    "granulos_sobre_cuenca": 614,
+    "ultimo_granulo_cuenca": "2026-10-16"
+   }
+  },
+  "cmr:modis_et_8d": {
+   "ok": true,
+   "datos": {
+    "existe": true,
+    "titulo": "MODIS/Terra Net Evapotranspiration Gap-Filled 8-Day L4 Global 500m SIN Grid V061",
+    "centro": "LPCLOUD",
+    "inicio": "2000-01-01",
+    "fin": "vigente",
+    "granulos_sobre_cuenca": 1196,
+    "ultimo_granulo_cuenca": "2025-12-27"
+   }
+  },
+  "cmr:modis_nieve_diaria": {
+   "ok": true,
+   "datos": {
+    "existe": true,
+    "titulo": "MODIS/Terra Snow Cover Daily L3 Global 500m SIN Grid V061",
+    "centro": "NSIDC_CPRD",
+    "inicio": "2000-02-24",
+    "fin": "vigente",
+    "granulos_sobre_cuenca": 9588,
+    "ultimo_granulo_cuenca": "2026-11-12"
+   }
+  },
+  "cmr:modis_nieve_sin_nubes": {
+   "ok": true,
+   "datos": {
+    "existe": true,
+    "titulo": "MODIS/Terra CGF Snow Cover Daily L3 Global 500m SIN Grid V061",
+    "centro": "NSIDC_CPRD",
+    "inicio": "2000-02-24",
+    "fin": "vigente",
+    "granulos_sobre_cuenca": 9757,
+    "ultimo_granulo_cuenca": "2026-11-12"
+   }
+  },
+  "cmr:modis_area_quemada": {
+   "ok": true,
+   "datos": {
+    "existe": true,
+    "titulo": "MODIS/Terra+Aqua Direct Broadcast Burned Area Monthly L3 Global 500m SIN Grid V061",
+    "centro": "LPCLOUD",
+    "inicio": "2000-11-01",
+    "fin": "vigente",
+    "granulos_sobre_cuenca": 311,
+    "ultimo_granulo_cuenca": "2026-09-01"
+   }
+  },
+  "cmr:viirs_ndvi_16d": {
+   "ok": true,
+   "datos": {
+    "existe": true,
+    "titulo": "VIIRS/NPP Vegetation Indices 16-Day L3 Global 500m SIN Grid V002",
+    "centro": "LPCLOUD",
+    "inicio": "2012-01-17",
+    "fin": "vigente",
+    "granulos_sobre_cuenca": 680,
+    "ultimo_granulo_cuenca": "2026-10-24"
+   }
+  },
+  "cmr:viirs_lst_diaria": {
+   "ok": true,
+   "datos": {
+    "existe": true,
+    "titulo": "VIIRS/NPP Land Surface Temperature/Emissivity Daily L3 Global 1km SIN Grid Day V002",
+    "centro": "LPCLOUD",
+    "inicio": "2012-01-17",
+    "fin": "vigente",
+    "granulos_sobre_cuenca": 5325,
+    "ultimo_granulo_cuenca": "2026-11-01"
+   }
+  },
+  "cmr:viirs_nieve_sin_nubes": {
+   "ok": true,
+   "datos": {
+    "existe": true,
+    "titulo": "VIIRS/NPP CGF Snow Cover Daily L3 Global 375m SIN Grid V002",
+    "centro": "NSIDC_CPRD",
+    "inicio": "2012-01-19",
+    "fin": "vigente",
+    "granulos_sobre_cuenca": 5397,
+    "ultimo_granulo_cuenca": "2026-11-03"
+   }
+  },
+  "cmr:viirs_fuegos_375m": {
+   "ok": true,
+   "datos": {
+    "existe": true,
+    "titulo": "VIIRS/NPP Active Fires 6-Min L2 Swath 375m V002",
+    "centro": "LPCLOUD",
+    "inicio": "2012-01-17",
+    "fin": "vigente",
+    "granulos_sobre_cuenca": 13896,
+    "ultimo_granulo_cuenca": "2026-11-01"
+   }
+  },
+  "cmr:smap_l3_9km": {
+   "ok": true,
+   "datos": {
+    "existe": true,
+    "titulo": "SMAP Enhanced L3 Radiometer Global and Polar Grid Daily 9 km EASE-Grid Soil Moisture V006",
+    "centro": "NSIDC_CPRD",
+    "inicio": "2015-03-31",
+    "fin": "vigente",
+    "granulos_sobre_cuenca": 4167,
+    "ultimo_granulo_cuenca": "2026-11-12"
+   }
+  },
+  "cmr:smap_l4_9km_3h": {
+   "ok": true,
+   "datos": {
+    "existe": true,
+    "titulo": "SMAP L4 Global 3-hourly 9 km EASE-Grid Surface and Root Zone Soil Moisture Geophysical Data V008",
+    "centro": "NSIDC_CPRD",
+    "inicio": "2015-03-31",
+    "fin": "vigente",
+    "granulos_sobre_cuenca": 33961,
+    "ultimo_granulo_cuenca": "2026-11-10"
+   }
+  },
+  "cmr:nasadem": {
+   "ok": true,
+   "datos": {
+    "existe": true,
+    "titulo": "NASADEM Merged DEM Global 1 arc second V001",
+    "centro": "LPCLOUD",
+    "inicio": "2000-02-11",
+    "fin": "2000-02-21",
+    "granulos_sobre_cuenca": 4,
+    "ultimo_granulo_cuenca": "2000-02-11"
+   }
+  },
+  "cmr:hls_landsat": {
+   "ok": true,
+   "datos": {
+    "existe": true,
+    "titulo": "HLS Landsat Operational Land Imager Surface Reflectance and TOA Brightness Daily Global 30m v2.0",
+    "centro": "LPCLOUD",
+    "inicio": "2013-04-11",
+    "fin": "vigente",
+    "granulos_sobre_cuenca": 2406,
+    "ultimo_granulo_cuenca": "2026-10-30"
+   }
+  },
+  "cmr:hls_sentinel2": {
+   "ok": true,
+   "datos": {
+    "existe": true,
+    "titulo": "HLS Sentinel-2 Multi-spectral Instrument Surface Reflectance Daily Global 30m v2.0",
+    "centro": "LPCLOUD",
+    "inicio": "2015-11-28",
+    "fin": "vigente",
+    "granulos_sobre_cuenca": 4379,
+    "ultimo_granulo_cuenca": "2026-11-04"
+   }
+  },
+  "cmr:icesat2_aguas_interiores": {
+   "ok": true,
+   "datos": {
+    "existe": true,
+    "titulo": "ATLAS/ICESat-2 L3A Along Track Inland Surface Water Data V007",
+    "centro": "NSIDC_CPRD",
+    "inicio": "2018-10-13",
+    "fin": "vigente",
+    "granulos_sobre_cuenca": 216,
+    "ultimo_granulo_cuenca": "2026-09-21"
+   }
+  },
+  "cmr:swot_lagos_obs": {
+   "ok": true,
+   "datos": {
+    "existe": true,
+    "titulo": "SWOT Level 2 Lake Single-Pass Vector Obs Data Product, Version D",
+    "centro": "POCLOUD",
+    "inicio": "2022-12-16",
+    "fin": "vigente",
+    "granulos_sobre_cuenca": 1361,
+    "ultimo_granulo_cuenca": "2026-11-10"
+   }
+  },
+  "cmr:swot_lagos_prior": {
+   "ok": true,
+   "datos": {
+    "existe": true,
+    "titulo": "SWOT Level 2 Lake Single-Pass Vector Prior Data Product, Version D",
+    "centro": "POCLOUD",
+    "inicio": "2022-12-16",
+    "fin": "vigente",
+    "granulos_sobre_cuenca": 1362,
+    "ultimo_granulo_cuenca": "2026-11-10"
+   }
+  },
+  "cmr:nisar_gcov": {
+   "ok": true,
+   "datos": {
+    "existe": true,
+    "titulo": "NISAR Validated Geocoded Polarimetric Covariance Product (Version 1)",
+    "centro": "ASF",
+    "inicio": "2025-10-28",
+    "fin": "vigente",
+    "granulos_sobre_cuenca": 6,
+    "ultimo_granulo_cuenca": "2026-11-01"
+   }
+  },
+  "appeears": {
+   "ok": true,
+   "datos": {
+    "productos_totales": 193,
+    "disponibles": {
+     "HLSL30.020": true,
+     "HLSS30.020": true,
+     "SPL3SMP_E.006": true,
+     "SPL4SMGP.008": true,
+     "NASADEM_NC.001": true,
+     "VNP13A1.002": true,
+     "VNP21A1D.002": true,
+     "VNP10A1.002": true,
+     "MOD16A2GF.061": true,
+     "MOD11A2.061": true,
+     "MOD13Q1.061": true,
+     "MOD10A1.061": true,
+     "MCD64A1.061": true,
+     "ECO_L2T_LSTE.002": true
+    }
+   }
+  },
+  "nasa_power": {
+   "ok": true,
+   "datos": {
+    "parametros": {
+     "ALLSKY_SFC_SW_DWN": 572,
+     "PRECTOTCORR": 572,
+     "RH2M": 572,
+     "T2M": 572,
+     "T2M_MAX": 572,
+     "T2M_MIN": 572,
+     "WS2M": 572
+    },
+    "fuentes": [
+     "SRB",
+     "SYN1DEG",
+     "MERRA2",
+     "POWER"
+    ],
+    "elevacion_celda_m": 4232.48
+   }
+  },
+  "enso": {
+   "ok": true,
+   "datos": {
+    "oni_registros": 921,
+    "oni_primero": [
+     "DJF",
+     "1950",
+     "25.01",
+     "-1.32"
+    ],
+    "oni_ultimo": [
+     "ASO",
+     "2026",
+     "29.23",
+     "2.46"
+    ],
+    "roni_ultimo": [
+     "ASO",
+     "2026",
+     "1.97"
+    ],
+    "knmi_nino34_ultimo": [
+     "2026.6666",
+     "2.86130"
+    ]
+   }
+  },
+  "ghcn_arequipa": {
+   "ok": true,
+   "datos": {
+    "estaciones_a_150km": [
+     {
+      "id": "PE000084752",
+      "nombre": "AREQUIPA",
+      "lat": -16.332,
+      "lon": -71.567,
+      "elev_m": 2520.0,
+      "dist_km": 8
+     }
+    ],
+    "completitud": {
+     "PE000084752": {
+      "TMAX": {
+       "anios_con_datos": 60,
+       "anios_90pct": [],
+       "rango": [
+        1948,
+        2025
+       ]
+      },
+      "TMIN": {
+       "anios_con_datos": 60,
+       "anios_90pct": [
+        1977,
+        1978,
+        1979,
+        1980,
+        1996
+       ],
+       "rango": [
+        1948,
+        2025
+       ]
+      },
+      "PRCP": {
+       "anios_con_datos": 52,
+       "anios_90pct": [
+        1977,
+        1978,
+        1979,
+        1980,
+        1987,
+        1988,
+        1991,
+        1992,
+        1993,
+        1994,
+        1995,
+        1996,
+        1997,
+        2003
+       ],
+       "rango": [
+        1973,
+        2025
+       ]
+      }
+     }
+    }
+   }
+  },
+  "copernicus_sentinel": {
+   "ok": true,
+   "datos": {
+    "SENTINEL-1": "S1C_IW_OCN__2SDV_20261111T231537_20261111T231602_010295_0148FC_F9D6.SAFE",
+    "SENTINEL-2": "S2B_MSIL1C_20261109T145649_N0513_R039_T18LZH_20261109T195151.SAFE"
+   }
+  },
+  "autodema_reporte": {
+   "ok": true,
+   "datos": {
+    "url": "https://www.autodema.gob.pe/wp-content/uploads/2024/03/REPORTE-HIDRICO.pdf",
+    "tipo": "application/pdf",
+    "bytes": 109212,
+    "menciona_total_chili": true,
+    "lineas_volumen_util": 6
+   }
+  },
+  "gibs_wmts": {
+   "ok": true,
+   "datos": 200
+  },
+  "giovanni": {
+   "ok": false,
+   "error": "ConnectionError: ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))"
+  },
+  "firms_api": {
+   "ok": false,
+   "error": "ConnectionError: ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))"
+  },
+  "chirps_v3_latam_mensual": {
+   "ok": true,
+   "datos": 200
+  },
+  "data_rods_gldas": {
+   "ok": false,
+   "error": "ConnectionError: ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))"
+  }
+ }
+}
