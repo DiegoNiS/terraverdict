@@ -2,14 +2,15 @@
 
 # 🛰️ TerraVerdict
 
-### *¿Es una tendencia, o solo ruido?*
-**El detective que no solo encuentra tendencias en la Tierra: las somete a contrainterrogatorio antes de creerles.**
+### *¿A dónde se va el agua de Arequipa?*
+**Seguimos el agua tramo por tramo, del cielo a la represa y de la represa al caño. Te decimos en qué tramo está cambiando, qué hacer ahí y cuánto confiar en esa respuesta.**
 
 [![NASA Space Apps 2026](https://img.shields.io/badge/NASA%20Space%20Apps-2026-0B3D91)](https://www.spaceappschallenge.org/2026/challenges/earth-system-trend-detective/)
 [![Reto](https://img.shields.io/badge/Reto-Be%20An%20Earth%20System%20Trend%20Detective!-0E9F92)](https://www.spaceappschallenge.org/2026/challenges/earth-system-trend-detective/)
 [![Sede](https://img.shields.io/badge/Sede-Arequipa%2C%20Per%C3%BA-C8102E)](#)
-[![Datos](https://img.shields.io/badge/Datos-NASA%20Earthdata%20%2B%20aliados-5B6B7F)](#6-datos-fuentes-verificadas)
-[![Estado](https://img.shields.io/badge/Estado-Dise%C3%B1o%20%2B%20MVP%20en%20desarrollo-orange)](#16-hoja-de-ruta)
+[![Datos](https://img.shields.io/badge/Datos-NASA%20Earthdata%20%2B%20Landsat-5B6B7F)](#10-datos-por-tramo)
+[![MCP](https://img.shields.io/badge/MCP-servidor%20abierto-7B3FE4)](#8-terraverdict-mcp-el-agua-de-arequipa-conversable)
+[![Estado](https://img.shields.io/badge/Estado-MVP%20de%20hackathon-orange)](#12-plan-para-las-48-horas)
 
 </div>
 
@@ -18,487 +19,438 @@
 ## Índice
 
 1. [Resumen en 30 segundos](#1-resumen-en-30-segundos)
-2. [El reto al que postulamos](#2-el-reto-al-que-postulamos)
-3. [El problema real](#3-el-problema-real)
-4. [La solución: qué es TerraVerdict](#4-la-solución-qué-es-terraverdict)
-5. [El componente innovador: el Contrainterrogatorio](#5-el-componente-innovador-el-contrainterrogatorio)
-6. [Datos (fuentes verificadas)](#6-datos-fuentes-verificadas)
-7. [Experiencia de usuario: 3D, mapas y casos guiados](#7-experiencia-de-usuario-3d-mapas-y-casos-guiados)
-8. [Metodología científica](#8-metodología-científica)
-9. [Arquitectura técnica](#9-arquitectura-técnica)
-10. [Validación científica y métricas](#10-validación-científica-y-métricas)
-11. [Aplicación en Arequipa y Perú](#11-aplicación-en-arequipa-y-perú)
-12. [Escalabilidad internacional](#12-escalabilidad-internacional)
-13. [Diferenciación frente a lo que ya existe](#13-diferenciación-frente-a-lo-que-ya-existe)
-14. [Viabilidad, costos y limitaciones](#14-viabilidad-costos-y-limitaciones)
-15. [Alineación con los criterios y premios de Space Apps](#15-alineación-con-los-criterios-y-premios-de-space-apps)
-16. [Hoja de ruta](#16-hoja-de-ruta)
+2. [El problema real](#2-el-problema-real)
+3. [Qué decisión cambia (y de quién)](#3-qué-decisión-cambia-y-de-quién)
+4. [La Cadena del Agua](#4-la-cadena-del-agua)
+5. [El detective: de tendencias a diagnóstico](#5-el-detective-de-tendencias-a-diagnóstico)
+6. [Productos para actuar](#6-productos-para-actuar)
+7. [Experiencia: Arequipa en 3D](#7-experiencia-arequipa-en-3d)
+8. [TerraVerdict MCP: el agua de Arequipa, conversable](#8-terraverdict-mcp-el-agua-de-arequipa-conversable)
+9. [El Sello de Confianza](#9-el-sello-de-confianza)
+10. [Datos por tramo](#10-datos-por-tramo)
+11. [Arquitectura](#11-arquitectura)
+12. [Plan para las 48 horas](#12-plan-para-las-48-horas)
+13. [Validación](#13-validación)
+14. [Escala global](#14-escala-global)
+15. [Limitaciones honestas](#15-limitaciones-honestas)
+16. [Cómo cubre el reto y los criterios](#16-cómo-cubre-el-reto-y-los-criterios)
 17. [Estructura del repositorio y cómo ejecutar](#17-estructura-del-repositorio-y-cómo-ejecutar)
 18. [Equipo](#18-equipo)
-19. [Recursos y datos abiertos de la guía](#19-recursos-y-datos-abiertos-de-la-guía)
-20. [Referencias](#20-referencias)
-21. [Licencias y atribuciones](#21-licencias-y-atribuciones)
+19. [Referencias, licencias y atribuciones](#19-referencias-licencias-y-atribuciones)
 
 ---
 
 ## 1. Resumen en 30 segundos
 
-Cualquier herramienta puede trazar una línea sobre una serie de datos satelitales y decir "p < 0.05". El problema es que **muchas de esas tendencias no sobreviven a una pregunta incómoda**:
+Arequipa es una ciudad en el desierto que vive del agua que baja de las alturas: la lluvia de verano cae en el altiplano, los **bofedales** la retienen como una esponja, las **represas** del sistema regulado del Chili la almacenan y, al final, la usan la ciudad, el campo y la industria. En los años secos, las represas bajan y la pregunta de siempre vuelve: *¿llega cada vez menos agua?, ¿y por qué?*
 
-- ¿Y si empiezo el análisis un año antes o un año después?
-- ¿No será que en ese periodo hubo más años de El Niño que de La Niña?
-- ¿No será que cambió el satélite que tomaba la medida?
-- ¿Lo confirma otro producto que **no** use los mismos datos de entrada?
-- ¿Hay suficientes años de datos para poder decidirlo?
+Hoy las herramientas analizan **una variable a la vez**. TerraVerdict analiza **la cadena completa**, con un dato satelital de NASA por tramo, y la convierte en un **diagnóstico**:
 
-**TerraVerdict** es una herramienta web con globo 3D y terreno real que permite elegir una variable de la Tierra (lluvia, temperatura, evapotranspiración, escorrentía, humedad del suelo, nieve), seleccionar una región, ver su serie temporal y calcular su tendencia y significancia, **como pide el reto**. Además, a cada tendencia le aplica cinco pruebas automáticas de robustez, el **Contrainterrogatorio**, y entrega un **Expediente** con un veredicto y, cuando los datos no alcanzan, **cuántos años faltarían para poder decidir**.
+> "La lluvia no cambia, pero los bofedales pierden verdor y la superficie de las represas baja: **el agua se está perdiendo en la esponja**, no en el cielo."
 
-> **Nuestra promesa:** no te decimos solo *si la Tierra está cambiando*; te decimos *cuánto puedes confiar en esa afirmación, y por qué*.
+Cada conclusión lleva un **Sello de Confianza** (cinco pruebas de robustez) y, cuando los datos no alcanzan, dice **cuántos años faltan para saberlo**. Además, TerraVerdict entrega tres cosas que se pueden usar el lunes:
 
----
-
-## 2. El reto al que postulamos
-
-| | |
-|---|---|
-| **Evento** | 2026 NASA Space Apps Challenge, 14–15 de noviembre de 2026 |
-| **Sede** | Arequipa, Perú |
-| **Reto** | [**Be An Earth System Trend Detective!**](https://www.spaceappschallenge.org/2026/challenges/earth-system-trend-detective/) (R01 en la guía local) |
-| **Dificultad** | Advanced |
-| **Temas** | Earth Science, Software |
-
-### Lo que pide el reto (resumen del enunciado oficial)
-
-Crear una herramienta que **seleccione variables** medidas por misiones de ciencias de la Tierra o producidas por modelos, **visualice cómo cambian en el tiempo** y determine **qué cambia, dónde, cuánto y si el cambio es "significativo"**. El enunciado destaca además que una misma variable puede tender en un sentido en una región y en el sentido opuesto en otra, **aunque ambas tendencias las cause el mismo proceso**.
-
-### Cómo cubrimos cada objetivo oficial
-
-| Objetivo del reto | Cómo lo resuelve TerraVerdict |
-|---|---|
-| 1. Identificar variables de interés | Catálogo curado de 6 variables con definición en lenguaje simple, más un asistente de preguntas guiadas ("¿qué quieres investigar y dónde?") |
-| 2. Obtener los datos para una región | Selección por clic, por polígono dibujado o por cuenca predefinida; series ya preprocesadas por celda y agregadas por área |
-| 3. Generar y visualizar la serie temporal | Serie mensual, anomalías desestacionalizadas, recta de Sen y banda de confianza; animación de anomalías sobre el globo 3D |
-| 4. Tasa de cambio y prueba de significancia | Pendiente de Sen por década con IC, Mann-Kendall con corrección por autocorrelación y regresión con tamaño muestral efectivo (t-test) |
-
-### Consideraciones opcionales del enunciado que también cubrimos
-
-| Sugerencia del enunciado | Respuesta |
-|---|---|
-| Público: estudiantes de secundaria y universidad, y público con base científica | Glosario integrado, lenguaje simple, modo "Detective" guiado y bilingüe ES/EN |
-| Definiciones simples de las variables | Ficha por variable: qué mide, de dónde viene, qué limitaciones tiene |
-| Preguntas guiadas y ejemplos de demostración | Asistente de 3 preguntas y **Casos del Detective** guiados paso a paso |
-| "Una tendencia no significativa también es interesante; a veces solo le falta más tiempo" | Lo convertimos en una salida explícita: **"Años para decidir"** |
-| Tendencias que se ven solo al quitar el ciclo estacional | Todas las pruebas se hacen sobre anomalías desestacionalizadas |
-| Tendencias lineales como punto de partida | El núcleo es lineal y monotónico; lo no lineal queda fuera del alcance, como sugiere el reto |
+1. 🟢 **Mapa de bofedales prioritarios**: dónde invertir primero el dinero de conservación de la cuenca.
+2. 💧 **Cuenta de evaporación de las represas**: cuánta agua se va al aire desde los embalses, expresada en días de agua para la ciudad.
+3. 🤖 **Servidor MCP abierto**: cualquier asistente de IA, QGIS o una hoja de cálculo puede preguntarle al sistema "¿cómo está el agua de Arequipa?" y recibir respuestas con número, fuente y sello, sin inventar nada.
 
 ---
 
-## 3. El problema real
+## 2. El problema real
 
-### 3.1 El problema global: tendencias que no resisten preguntas
+### 2.1 Una ciudad del desierto que depende de una cadena larga y frágil
 
-1. **La ventana temporal manda.** Las tendencias de pocas décadas suelen no ser significativas, y mover una ventana de 30 años un solo año puede casi duplicar la pendiente ([climate.gov](https://climate.gov/comment/2959)). Elegir a conveniencia el año de inicio es una forma conocida de fabricar "tendencias".
-2. **La variabilidad natural se disfraza de tendencia.** En los Andes externos, El Niño-Oscilación del Sur (ENSO) es el principal motor de la variabilidad interanual de la lluvia ([Jonaitis et al., 2021](https://geo.appstate.edu/sites/default/files/jonaitis_etal_2021_ijoc.pdf)). Un periodo con más años de El Niño al final que al inicio puede producir una "tendencia" que es solo la secuencia de fases.
-3. **El instrumento también cambia.** La propia ficha de GPM IMERG advierte que los cambios en la constelación de satélites pueden introducir artefactos en estudios de cambios multianuales ([NCAR/GDEX](https://gdex.ucar.edu/datasets/d731000/)).
-4. **Probar miles de píxeles a la vez genera falsos positivos.** Al hacer una prueba por celda en productos grillados, una fracción de celdas sale "significativa" por azar, y la autocorrelación espacial las agrupa en patrones espurios ([Cortés et al., GRL 2021](https://sites.bu.edu/cliveg/files/2021/03/Cortes-GRL-2021.pdf)). Aun así, las correcciones por pruebas múltiples son raras en teledetección ambiental ([Remote Sensing, 2024](https://mdpi.com/2072-4292/16/20/3886)).
-5. **Ignorar la autocorrelación produce sobredetección** de tendencias significativas ([JGR Oceans](https://zendy.io/title/10.1002/jgrc.20264)).
+- Arequipa se abastece del río Chili, regulado por un sistema de represas en la cabecera de la cuenca (El Pañe, Dique de los Españoles, Pillones, Chalhuanca, Bamputañe, El Frayle y Aguada Blanca), operado por **AUTODEMA**. *(Lista y capacidades por confirmar con AUTODEMA.)*
+- Parte de ese sistema **trasvasa agua desde cabeceras vecinas**, así que la "cuenca" que alimenta a la ciudad no es solo la cuenca topográfica del Chili. **El polígono de análisis debe incluir las áreas de aporte de los trasvases**. Es un error frecuente que TerraVerdict corrige desde la configuración.
+- Gran parte de la cabecera está dentro de la **Reserva Nacional de Salinas y Aguada Blanca**, donde los **bofedales** regulan el agua que llega a las represas en la época seca.
 
-### 3.2 El problema local: Arequipa decide con pocos datos
+### 2.2 Se decide con pocos datos y mucha discusión
 
 - La falta de datos hidrométricos y meteorológicos es el mayor problema para estudiar y evaluar los recursos hídricos en las cuencas Camaná, Majes, Sihuas y Quilca-Vítor-Chili ([estudio hidrológico con información satelital](https://core.ac.uk/download/482041099.pdf)).
-- Solo tres estaciones de caudal en Arequipa tienen registros de más de 20 años y siguen activas; hay muchos datos faltantes y la regulación altera los flujos ([Purdue / Arequipa Nexus](https://ag.purdue.edu/hydrology/swm/es/documents/datos_descarga_rios.pdf)).
-- En los Andes peruanos, las redes de pluviómetros son escasas y discontinuas, por lo que se depende de productos satelitales con incertidumbre persistente ([EGUsphere, 2026](https://egusphere.copernicus.org/preprints/2026/egusphere-2026-604/egusphere-2026-604.pdf)). En la costa seca, IMERG no mejora la detección ni la intensidad de lluvia y persisten errores sistemáticos ([Manz et al., 2017](https://redi.cedia.edu.ec/document/86400)).
+- Solo tres estaciones de caudal en Arequipa tienen registros de más de 20 años y siguen activas, con muchos datos faltantes y flujos alterados por la regulación ([Purdue / Arequipa Nexus](https://ag.purdue.edu/hydrology/swm/es/documents/datos_descarga_rios.pdf)).
 - Las afirmaciones sobre la sequía se disputan públicamente: en una temporada, el Ministerio de Agricultura negó la escasez que SENAMHI advertía para Arequipa ([Proactivo](https://proactivo.com.pe/?p=33591)).
 
-### 3.3 Usuarios
+### 2.3 Hay dinero para actuar, pero no hay mapa de dónde actuar
 
-| Usuario | Necesidad | Qué obtiene |
-|---|---|---|
-| **Estudiantes de secundaria y universidad** *(público principal del reto)* | Aprender a investigar con datos reales sin caer en conclusiones falsas | Casos guiados, glosario, Expediente explicado |
-| **Docentes** | Material de clase sobre ciencia de datos y clima | Casos reproducibles y exportables |
-| **Periodistas y comunicadores** | Verificar una afirmación antes de publicarla | Verificador de afirmaciones con veredicto y tarjeta compartible |
-| **Gestores del agua y gobiernos locales** *(Impacto Local)* | Saber qué tendencias de su cuenca son sólidas y dónde faltan datos | Mapa de veredictos y Mapa de brechas de monitoreo |
-| **Investigadores** | Reproducir y auditar el análisis | Informe reproducible con versiones de datos, parámetros y hash |
+La Ley 30215 creó los **Mecanismos de Retribución por Servicios Ecosistémicos (MERESE)**, y SUNASS los incorpora en las tarifas de las empresas de agua: una parte de lo que pagan los usuarios va a conservar y recuperar la cabecera de cuenca. La pregunta práctica es: **¿qué bofedal, qué ladera, qué tramo primero?** Hoy esa priorización casi no usa la historia satelital de 40 años que está disponible gratis. *(Monto y estado de ejecución del MERESE de SEDAPAR: por confirmar con SUNASS y SEDAPAR.)*
+
+### 2.4 El problema científico de fondo (el del reto)
+
+Una tendencia de 25 años puede ser ruido: depende del año de inicio, de la secuencia de El Niño y La Niña o de un cambio de satélite ([climate.gov](https://climate.gov/comment/2959), [Jonaitis et al., 2021](https://geo.appstate.edu/sites/default/files/jonaitis_etal_2021_ijoc.pdf), [NCAR/GDEX](https://gdex.ucar.edu/datasets/d731000/)). Si un gestor invierte según una tendencia falsa, pierde dinero y tiempo. Por eso cada tramo pasa por el **Sello de Confianza** antes de entrar al diagnóstico.
 
 ---
 
-## 4. La solución: qué es TerraVerdict
+## 3. Qué decisión cambia (y de quién)
 
-TerraVerdict es una aplicación web con **cuatro modos**:
+Una herramienta no resuelve la escasez de agua. Lo que sí puede hacer es **cambiar una decisión concreta, tomada por alguien concreto, en un momento concreto**. Estas son las decisiones que TerraVerdict apunta a mejorar:
 
-| Modo | Qué hace |
-|---|---|
-| 🌍 **Explorar** | Globo 3D con terreno real. Eliges variable y periodo y ves el **Mapa de Veredictos**: magnitud de la tendencia y su robustez en un solo color |
-| 🔎 **Interrogar** | Clic en una celda, cuenca o polígono: serie temporal, tendencia, significancia y las cinco pruebas del Contrainterrogatorio, con el **Expediente** final |
-| 🕵️ **Casos del Detective** | Recorridos guiados paso a paso que enseñan a pensar como un científico de datos |
-| ⚖️ **Verificar una afirmación** | Formulario estructurado ("la lluvia en X disminuyó entre A y B") que devuelve *Respaldada*, *Contradicha* o *No decidible*, con la causa |
+| Actor | Decisión real | Cuándo | Qué le entrega TerraVerdict |
+|---|---|---|---|
+| **SEDAPAR / SUNASS** (MERESE) | En qué zonas de la cabecera invertir el fondo de conservación | Planificación anual | **Mapa de bofedales prioritarios** con tendencia, sello y área aguas arriba de cada represa |
+| **AUTODEMA** | Cómo operar el sistema y qué esperar de la temporada de lluvias | Antes y durante la temporada (dic–mar) | Estado de la superficie de cada represa frente a su historia desde 1984 y **cuenta de evaporación** |
+| **ANA / Junta de usuarios del Chili** | Cuánta agua se distribuye en la época seca y a quién | Al cierre de la temporada de lluvias | Diagnóstico de la cadena: si el problema es de oferta (cielo), de pérdida (calor, esponja) o de uso |
+| **SENAMHI Arequipa** | Dónde instalar o reactivar estaciones | Planificación de red | **Mapa de "no decidible"**: dónde una estación reduciría más la incertidumbre ("faltan X años") |
+| **Periodistas y público** | Creer o no una afirmación sobre la sequía | Cuando aparece la noticia | **Verificador**: Respaldada / Contradicha / No decidible, con la causa |
+| **Estudiantes y docentes** *(público del reto)* | Entender el agua de su ciudad con datos reales | En clase | Historia guiada en 3D y casos del detective |
+
+> **Cómo mediremos el impacto:** no por "usuarios registrados", sino por **una decisión que use el mapa o el diagnóstico**. Meta para después del hackathon: presentar el mapa de bofedales prioritarios a SEDAPAR o a la jefatura de la Reserva y obtener una carta de interés.
+
+---
+
+## 4. La Cadena del Agua
+
+El agua de Arequipa recorre siete tramos. Cada tramo tiene una pregunta, un dato y un semáforo.
 
 ```mermaid
 flowchart LR
-    A[Elegir variable\ny región] --> B[Serie temporal\ndesestacionalizada]
-    B --> C[Tendencia\nSen + MK + t-test]
-    C --> D{Contrainterrogatorio}
-    D --> D1[1. Ventanas]
-    D --> D2[2. ENSO]
-    D --> D3[3. Sensor]
-    D --> D4[4. Independencia]
-    D --> D5[5. Detectabilidad]
-    D1 & D2 & D3 & D4 & D5 --> E[Expediente\ny veredicto]
-    E --> F[Tarjeta compartible\n+ informe reproducible]
+    T1[1. Cielo\n¿Llueve menos?] --> T3[3. Esponja\n¿Se secan los bofedales?]
+    T2[2. Calor\n¿Se calienta y evapora más?] -.afecta.-> T3
+    T2 -.afecta.-> T4
+    T2 -.afecta.-> T5
+    T3 --> T4[4. Pérdida\n¿Aumenta la evapotranspiración?]
+    T4 --> T5[5. Represas\n¿Baja el agua almacenada?]
+    T5 --> T6[6. Uso\n¿Crece la demanda verde y urbana?]
+    T0[0. Nieve\nTermómetro de altura] -.indicador.-> T2
 ```
 
----
-
-## 5. El componente innovador: el Contrainterrogatorio
-
-Las herramientas existentes responden **"¿hay tendencia?"**. TerraVerdict responde **"¿resiste esta tendencia a las cinco formas más comunes de engañarse?"**, y lo hace de forma automática, por celda y para cualquier usuario.
-
-### Las cinco pruebas
-
-| # | Prueba | Pregunta | Qué se calcula | Resultado visible |
+| # | Tramo | Pregunta | Dato principal | Contraste |
 |---|---|---|---|---|
-| 1 | **Laboratorio de ventanas** | ¿La tendencia depende del año de inicio o fin que elegí? | Tendencia y significancia para **todas** las combinaciones de inicio y fin con longitud mínima preregistrada | Gráfico triangular interactivo y % de ventanas que confirman el signo |
-| 2 | **Filtro ENSO** | ¿Es solo la secuencia de El Niño y La Niña? | Regresión con el índice ONI/RONI de NOAA como covariable, con rezagos preregistrados | Tendencia "cruda" frente a "sin ENSO", y % de varianza explicada por ENSO |
-| 3 | **Detector de artefactos de sensor** | ¿La tendencia es un escalón del instrumento? | Modelo con y sin un salto en transiciones documentadas (p. ej. TRMM→GPM en junio de 2014 para IMERG) | Alerta "posible artefacto" y tendencia corregida |
-| 4 | **Concordancia ponderada por independencia** | ¿Lo confirman fuentes que no comparten datos de entrada? | Misma prueba en varios productos; las confirmaciones se cuentan por **familias independientes**, no por número de productos | "Confirmada por N familias independientes" |
-| 5 | **Detectabilidad y años para decidir** | ¿Hay suficientes datos para decidir? | Tendencia mínima detectable y años necesarios, por fórmula de Weatherhead et al. (1998) y por bootstrap por bloques | "Faltan ~X años para poder decidirlo" |
+| 1 | ☁️ **Cielo** | ¿Llueve menos en la cabecera? | GPM IMERG V07 (mensual, 0.1°) | MERRA-2, PISCOp |
+| 2 | 🌡️ **Calor** | ¿Se calienta la superficie? | MODIS LST (MOD11A2, 1 km) | MERRA-2 temperatura a 2 m |
+| 3 | 🌱 **Esponja** | ¿Pierden verdor los bofedales en época seca? | Landsat NDVI de época seca (30 m, desde 1984) | MODIS NDVI (MOD13Q1, 250 m), SMAP |
+| 4 | 💨 **Pérdida** | ¿Aumenta la evapotranspiración? | MODIS ET (MOD16A2, 500 m) | GLDAS-2.1 Noah |
+| 5 | 🏞️ **Represas** | ¿Se reduce la superficie de agua? | Landsat (JRC Global Surface Water desde 1984 + Landsat/HLS reciente) | Volúmenes publicados por AUTODEMA |
+| 6 | 🏙️ **Uso** | ¿Crece el área regada y la ciudad sobre la campiña? | Landsat NDVI y superficie construida | — |
+| 0 | ❄️ **Nieve** | ¿Sube la línea de nieve en Chachani, Misti y Pichu Pichu? | MODIS nieve (MOD10A1, 500 m) | MODIS Aqua (MYD10A1) |
 
-### Lo que lo hace realmente diferente
+**Por qué la nieve es "tramo 0" y no una fuente principal.** En la cabecera del Chili casi no quedan glaciares y la nieve de los volcanes es estacional; el grueso del agua viene de la lluvia de verano en el altiplano *(a confirmar con la literatura de la cuenca)*. Por eso usamos la nieve como **termómetro de altura**: es la parte más visible del calentamiento y la mejor imagen para el público, pero no la contamos como un tramo de volumen.
 
-**a) La concordancia ponderada por independencia (genealogía de datos).**
-Si tres productos confirman una tendencia pero los tres usan los mismos pluviómetros como insumo, no son tres confirmaciones: es una. TerraVerdict mantiene un **grafo de procedencia** documentado a partir de las fichas oficiales de cada producto. Ejemplos verificados:
+**Por qué agregamos el tramo "Uso".** La pregunta es *a dónde se va el agua*. Sin mirar el final de la cadena, una represa que baja puede deberse a más consumo y no a menos lluvia. Landsat muestra cómo cambiaron el área regada y la ciudad sobre la campiña desde los años 80.
 
-| Producto | Insumos documentados |
-|---|---|
-| IMERG Final Run | Satélites + ajuste mensual con el análisis de pluviómetros **GPCC** ([NASA GPM](https://gpm.nasa.gov/taxonomy/term/1417)) |
-| GLDAS-2.1 Noah | Forzado con **GDAS**, **GPCP** desagregado y radiación **AGRMET** ([Earth Engine / GES DISC](https://developers.google.com/earth-engine/datasets/catalog/NASA_GLDAS_V021_NOAH_G025_T3H?authuser=2)) |
-| PISCOp V2.1 | Pluviómetros nacionales de SENAMHI + **CHIRP** + climatologías radar-pluviómetro ([SENAMHI](https://repositorio.senamhi.gob.pe/handle/20.500.12542/288)) |
-| MERRA-2 | Reanálisis atmosférico; su precipitación se documentará desde las fichas oficiales antes de usarla en esta prueba |
+### Alcance del MVP de 48 horas
 
-El usuario ve qué productos son "parientes" y cuántas confirmaciones son realmente independientes.
-
-**b) El Mapa de Veredictos con paletas que suprimen valores inciertos (VSUP).**
-En lugar de un mapa de tendencias más un mapa de significancia por separado, usamos *Value-Suppressing Uncertainty Palettes* (Correll, Moritz y Heer, CHI 2018): cuando la incertidumbre es alta, el color pierde intensidad y diferencia. Su evaluación mostró que, frente a los mapas bivariados tradicionales, las VSUP llevan a las personas a dar más peso a la incertidumbre al decidir ([Tableau Research](https://www.tableau.com/research/publications/value-suppressing-uncertainty-palettes)). Así el mapa **no puede leerse mal**: una tendencia frágil nunca se ve tan llamativa como una robusta.
-
-**c) "Años para decidir" convierte el "no significativo" en información útil.**
-El reto dice que a veces a una tendencia solo le falta más tiempo. TerraVerdict lo cuantifica.
-
-**d) Los "gemelos opuestos".**
-El reto plantea que el mismo proceso puede producir tendencias opuestas en regiones distintas. En Perú existe un caso documentado: los episodios cálidos de El Niño (Niño 3.4) traen lluvia a la costa norte y la reducen en los Andes peruanos ([IGP](https://repositorio.igp.gob.pe/bitstreams/0f66de0b-2ffa-4d2e-bfbb-08772a2bc6cf/download)). El modo Gemelos muestra lado a lado dos regiones con tendencias de signo opuesto y su sensibilidad a ENSO, para que el usuario descubra si una causa común las explica. **Es una hipótesis que la herramienta pone a prueba, no un resultado anunciado.**
-
-**e) Preregistro sellado.**
-Antes de leer los datos, los parámetros del análisis (longitud mínima de ventana, rezagos ENSO, umbrales, α) se guardan en un archivo de configuración cuyo hash SHA-256 aparece en cada Expediente. Nadie, ni nosotros, puede ajustar las reglas después de ver el resultado sin que se note.
-
-### Por qué no usamos IA generativa en el núcleo
-
-Herramientas como Climinator verifican afirmaciones climáticas con modelos de lenguaje, contrastándolas con **textos** de consenso científico ([arXiv 2401.12566](https://arxiv.org/html/2401.12566v1)). TerraVerdict las contrasta con **datos**. Un modelo de lenguaje no añadiría rigor y sí riesgo de alucinación, por eso el núcleo es estadística transparente y reproducible.
+**Cuatro tramos y una represa:** Cielo (IMERG), Calor (MODIS LST), Esponja (NDVI de bofedales), Nieve (MODIS) como termómetro, y la superficie de **una represa** (El Frayle o El Pañe) con Landsat desde 1984. Los tramos Pérdida y Uso quedan como capas listas en la arquitectura y entran en la Fase 1.
 
 ---
 
-## 6. Datos (fuentes verificadas)
+## 5. El detective: de tendencias a diagnóstico
 
-> Todas las especificaciones se verificaron en fuentes oficiales o espejos oficiales. Las que no pudimos verificar están marcadas como **"por confirmar"** y no se usan en conclusiones hasta confirmarlas.
+### 5.1 Las reglas de diagnóstico (preregistradas)
 
-### 6.1 Catálogo de variables
+El detective no adivina: compara los semáforos de los tramos con una tabla de patrones escrita **antes** de mirar los datos. El hash SHA-256 de la tabla aparece en cada veredicto.
 
-| Variable | Definición simple | Producto principal | Productos de contraste |
-|---|---|---|---|
-| 🌧️ Precipitación | Cuánta agua cae del cielo | GPM IMERG V07 Final (mensual) | MERRA-2, GLDAS-2.1, PISCOp (solo Perú, hasta 2018) |
-| 🌡️ Temperatura del aire (2 m) | Qué tan caliente está el aire cerca del suelo | MERRA-2 | GLDAS-2.1 (forzante) |
-| 💨 Evapotranspiración | Agua que vuelve a la atmósfera desde el suelo y las plantas | GLDAS-2.1 Noah | — |
-| 🏞️ Escorrentía | Agua que corre por la superficie y alimenta ríos | GLDAS-2.1 Noah | — |
-| 🌱 Humedad del suelo | Cuánta agua guarda la capa superior del suelo | GLDAS-2.1 Noah | SMAP (solo desde 2015) |
-| ❄️ Cobertura de nieve | Qué fracción del terreno está cubierta de nieve | MODIS MOD10A1F (Terra, sin nubes) | MODIS Aqua (MYD10A1F) |
+| Cielo | Calor / ET | Esponja | Represas | Diagnóstico | Dónde actuar |
+|---|---|---|---|---|---|
+| ↓ robusta | = | ↓ | ↓ | **Llega menos agua del cielo** | Almacenamiento, gestión de demanda, planes de sequía |
+| = | ↑ robusta | ↓ | ↓ | **El agua se pierde por calor antes de llegar** | Proteger bofedales, reducir evaporación de embalses |
+| = | = | ↓ robusta | ↓ | **La esponja se degrada** (pastoreo, drenaje, erosión) | Restauración de bofedales con fondos MERESE |
+| = | = | = | ↓ | **El agua llega, pero se usa o se pierde abajo** | Eficiencia de riego, fugas, control de la demanda |
+| ⚪ | ⚪ | ⚪ | ⚪ | **Todavía no se puede saber** | Medir: dónde instalar estaciones y cuántos años faltan |
 
-### 6.2 Especificaciones y restricciones
+*(↓ = tendencia a la baja con Sello de Confianza; = = sin tendencia detectable; ⚪ = no decidible.)*
 
-| Fuente | Rol | Resolución / periodo | Restricciones conocidas |
-|---|---|---|---|
-| **GPM IMERG V07 Final Run** (NASA/JAXA) | Precipitación principal | 0.1°, global. La ficha de GPM indica cobertura desde 1998 en V07; espejos como NCAR la listan desde junio de 2000. **Fecha de inicio por confirmar en GES DISC** | Latencia de ~3.5 meses; menor habilidad en terreno complejo, superficies heladas y costas; usa TRMM hasta mayo de 2014 y GPM desde junio de 2014 |
-| **MERRA-2** (NASA GMAO) | Temperatura y segunda familia de precipitación | Grilla nativa de ½° × ⅝° | Es un reanálisis (modelo + observaciones); la elevación es un promedio de la celda. Vía NASA POWER: meteorología desde 1981 y se recomienda terminar el análisis 2 meses antes del tiempo real |
-| **GLDAS-2.1 Noah, mensual 0.25°** (NASA GES DISC) | Evapotranspiración, escorrentía, humedad del suelo | 0.25°, de 60°S a 90°N, desde enero de 2000; 36 campos de superficie terrestre. DOI [10.5067/SXAVCZFAQLNO](https://doi.org/10.5067/SXAVCZFAQLNO) | Salida de modelo sin asimilación ("open-loop"); depende de sus forzantes (GPCP, GDAS, AGRMET) |
-| **MODIS MOD10A1F / MYD10A1F v6.1** (NSIDC) | Cobertura de nieve | 500 m, diaria; Terra desde 24/02/2000, Aqua desde 04/07/2002 | La nube es su mayor limitación; el relleno sin nubes usa el último día despejado; nieve fina o efímera puede no detectarse |
-| **SMAP L3** (NSIDC) | Humedad del suelo (contraste reciente) | 36 km (L3 estándar), diaria, desde 31/03/2015 | Unos 11 años: insuficiente para tendencias climáticas; solo contraste |
-| **ONI / RONI** (NOAA CPC) | Covariable ENSO | Mensual desde 1950 | No es dato de NASA; desde 2026 NOAA usa el RONI para el monitoreo oficial, por eso probamos ambos |
-| **PISCOp V2.1** (SENAMHI) | Referencia con pluviómetros para Perú | 0.1°, diaria y mensual, 1981–2018 | SENAMHI suspendió su actualización en tiempo casi real; licencia CC BY-NC-ND; incluye CHIRP, por lo que no es totalmente independiente de satélite |
-| **Copernicus DEM GLO-30 / GLO-90** (ESA) | Terreno 3D y perfiles de elevación | 30 m y 90 m, global, gratuito; en AWS Open Data como COG | Es un modelo de superficie (incluye edificios y vegetación); requiere nota de atribución si se modifica |
-| **NASA GIBS** | Mapa base de imágenes satelitales | WMTS/WMS gratuitos | Solo visual: no se usa para cálculos |
+**Honestidad del diagnóstico.** El patrón es **compatible** con una causa, no la demuestra. El veredicto se redacta así: *"Los datos son compatibles con que el agua se pierde en el tramo de calor; ninguna otra combinación de la tabla los explica mejor"*. Y si la combinación no está en la tabla, el sistema lo dice en vez de forzar un diagnóstico.
 
-### 6.3 Fuentes evaluadas y descartadas (con motivo)
+### 5.2 Prueba de coherencia: el balance de agua
 
-| Fuente | Por qué no entra al núcleo |
-|---|---|
-| **NISAR** | La publicación calibrada comenzó el 20/07/2026 con observaciones desde el 17/06/2026: no hay historia para tendencias. Además existe otro reto específico para NISAR |
-| **GRACE / GRACE-FO** | Resolución efectiva de ~300 km: demasiado gruesa para una cuenca como la del Chili. Puede usarse a escala continental en una fase futura |
-| **FIRMS (incendios)** | Fuera del foco hidroclimático del MVP; candidato para la fase de escalamiento |
-| **Giovanni** | No es una fuente sino una herramienta: la usamos para **validar** que nuestras series coinciden con las de NASA |
+Lluvia, evapotranspiración, salida de agua y cambio de almacenamiento deben cuadrar: **P − ET − Q ≈ ΔS**. Si no cuadran, alguno de los datos está mal y el sistema avisa.
+
+> ⚠️ **Trampa que evitamos:** GLDAS es un modelo que cierra su propio balance por construcción. Usar lluvia, ET y escorrentía **todas de GLDAS** daría un balance perfecto que no prueba nada. Por eso el balance combina **fuentes independientes**: P de IMERG, ET de MODIS, ΔS de la superficie de las represas (Landsat) y Q de las descargas que publica AUTODEMA. Es la misma lógica de la genealogía de datos del Sello de Confianza.
+
+### 5.3 Cuando un tramo es "no decidible": buscar la serie más larga
+
+MODIS tiene unos 25 años, y muchas veces no alcanza para decidir. Landsat tiene archivo desde 1984. Si un tramo sale "no decidible" con MODIS y existe una variable equivalente en Landsat (verdor de bofedales, superficie de agua, área urbana), el detective **repite la prueba con la serie larga** y lo indica en el veredicto.
 
 ---
 
-## 7. Experiencia de usuario: 3D, mapas y casos guiados
+## 6. Productos para actuar
 
-### 7.1 Globo 3D con terreno real
+### 6.1 🟢 Mapa de bofedales prioritarios (el producto estrella)
 
-- **Motor:** MapLibre GL JS v5, que soporta proyección de globo y terreno 3D sobre el globo desde su versión 5.0 ([release notes](https://newreleases.io/project/github/maplibre/maplibre-gl-js/release/v5.0.0)). Es código abierto y no requiere claves de pago.
-- **Terreno:** teselas de elevación generadas por nosotros desde Copernicus DEM, con exageración vertical ajustable. Los Andes importan: la lluvia y la temperatura cambian con la altura, y verlo en 3D lo hace evidente.
-- **Mapa base:** imágenes de color verdadero MODIS desde NASA GIBS.
-- **Capa de datos:** el Mapa de Veredictos se proyecta sobre el terreno.
+Los bofedales se distinguen desde el espacio porque **siguen verdes en la época seca** (jun–sep), cuando el resto del altiplano está pardo. Con Landsat:
 
-### 7.2 Vistas interactivas
+1. **Mapear** bofedales: píxeles con NDVI de época seca alto y pendiente baja (NASADEM).
+2. **Medir su tendencia** desde 1984: pendiente de Sen del NDVI de época seca por bofedal, con Sello de Confianza.
+3. **Ponderar su importancia**: área del bofedal y si está **aguas arriba de una represa** del sistema.
+4. **Priorizar**: `prioridad = degradación robusta × área × aporte a represa`.
 
-| Vista | Qué muestra | Por qué importa |
-|---|---|---|
-| 🗺️ **Mapa de Veredictos (VSUP)** | Magnitud de la tendencia y robustez en un solo color | Lo frágil se ve apagado; lo robusto, intenso |
-| 🏔️ **Corte transversal 3D** | Perfil de elevación del Pacífico a la Amazonía (p. ej. a la latitud de Arequipa) con la tendencia y la robustez de cada celda a lo largo del perfil | Muestra si las tendencias cambian con la altitud |
-| 🔺 **Laboratorio de ventanas** | Triángulo de inicio×fin coloreado por tendencia; clic en una celda del triángulo y la serie se recalcula | Hace visible el *cherry-picking* |
-| 🌊 **Interruptor ENSO** | Serie con y sin el efecto de ENSO, y fases El Niño/La Niña sombreadas | Muestra cuánto era variabilidad natural |
-| 👯 **Modo Gemelos** | Dos mapas sincronizados con regiones de signo opuesto y sus correlaciones con ENSO | Responde directamente al rompecabezas del reto |
-| ⏯️ **Línea de tiempo** | Animación mensual de anomalías sobre el globo | Engancha al público y muestra el ciclo estacional |
-| 📍 **Mapa de brechas** | Dónde la tendencia es "no decidible" y no hay estaciones cerca | Prioriza dónde medir más |
+Salida: lista ordenada, mapa en 3D y archivo GeoJSON que se abre en QGIS. Es lo que una oficina de MERESE o la jefatura de la Reserva necesita para decidir dónde ir primero.
 
-### 7.3 El Expediente
+### 6.2 💧 Cuenta de evaporación de las represas
 
-```
-┌───────────────────────────────────────────────────────────┐
-│ EXPEDIENTE TV-2026-0001            Precipitación · IMERG │
-│ Región: Cuenca alta del río Chili, Arequipa              │
-│ Periodo: ventana completa disponible · anomalías         │
-├───────────────────────────────────────────────────────────┤
-│ Tendencia (Sen)........  ±X.X mm/mes por década [IC 95%] │
-│ Mann-Kendall (Hamed-Rao) p = 0.0XX   ·   FDR: q = 0.0XX  │
-├───────────────────────────────────────────────────────────┤
-│ CONTRAINTERROGATORIO                                      │
-│ [✓/✗] 1. Ventanas ......... XX % confirman el signo      │
-│ [✓/✗] 2. ENSO ............. tendencia sin ENSO: ±X.X      │
-│ [✓/✗] 3. Sensor ........... salto 2014-06: sí/no         │
-│ [✓/✗] 4. Independencia .... N familias independientes    │
-│ [✓/✗] 5. Detectabilidad ... faltan ~XX años              │
-├───────────────────────────────────────────────────────────┤
-│ VEREDICTO: ROBUSTA / FRÁGIL / NO DECIDIBLE / SIN TENDENCIA│
-│ Config preregistrada: sha256:xxxxxxxx… · Datos: DOIs      │
-└───────────────────────────────────────────────────────────┘
+A más de 4000 m, con radiación intensa y viento, un embalse pierde agua directamente al aire. TerraVerdict estima:
+
+`evaporación (hm³/mes) = superficie de agua (Landsat) × evaporación de agua libre (Penman con radiación, temperatura, humedad y viento de MERRA-2)`
+
+y la traduce a una unidad que todos entienden: **"días de agua para la ciudad"** *(consumo de referencia por confirmar con SEDAPAR)*. Es una estimación y se presenta con su rango; sirve para comparar con alternativas como coberturas o una operación que reduzca la superficie expuesta.
+
+### 6.3 ⚖️ Veredicto de la cadena y verificador
+
+Una tarjeta para compartir con el diagnóstico, los semáforos de los tramos, el sello de cada uno y un código QR al expediente reproducible.
+
+### 6.4 📍 Mapa de "dónde medir"
+
+Donde un tramo es "no decidible" y no hay estaciones cerca, se marca como prioridad de monitoreo con los **años que faltan para decidir**.
+
+### 6.5 🌦️ Panorama de temporada *(stretch, si alcanza el tiempo)*
+
+En noviembre empieza la pregunta "¿se llenarán las represas este año?". Con la lluvia acumulada de la temporada (IMERG Late Run) y el estado de ENSO, se buscan los **años análogos** de la historia y se muestra el rango de llenado que tuvieron esas represas. Es un método simple y transparente; no es un pronóstico hidrológico y así se presenta.
+
+---
+
+## 7. Experiencia: Arequipa en 3D
+
+### 7.1 La escena
+
+- **Terreno real en 3D** de la cuenca con los volcanes Chachani, Misti y Pichu Pichu, desde **NASADEM** (30 m), sobre MapLibre GL JS v5 y con exageración vertical ajustable.
+- **El agua que baja:** partículas animadas que recorren la red de ríos (HydroRIVERS) desde las cumbres hasta las represas y la ciudad, con `TripsLayer` de deck.gl. La **densidad** de partículas sigue el caudal relativo y el **color** sigue el semáforo de cada tramo.
+- **Represas que se llenan:** cada embalse se dibuja con su contorno histórico máximo y su superficie del mes elegido; al mover la línea de tiempo, el agua sube o baja.
+- **Bofedales que respiran:** manchas verdes que se apagan o se intensifican según su tendencia, con paletas que suprimen la incertidumbre (VSUP, [Correll et al., 2018](https://www.tableau.com/research/publications/value-suppressing-uncertainty-palettes)): lo frágil se ve apagado y lo robusto se ve intenso.
+
+### 7.2 La máquina del tiempo
+
+Un deslizador que compara **imágenes satelitales reales** de dos años: la nieve del Chachani, la superficie de El Frayle o la campiña de Arequipa en 1985 frente a hoy (Landsat, color natural).
+
+### 7.3 La historia guiada (*scrollytelling*)
+
+La cámara viaja por la cuenca mientras el usuario hace scroll:
+
+1. **El cielo** → la cámara sube a las nubes del altiplano: ¿llueve menos?
+2. **La nieve** → acercamiento al Chachani con la máquina del tiempo.
+3. **La esponja** → vuelo bajo sobre los bofedales de la Reserva.
+4. **La represa** → el embalse sube y baja de 1984 a hoy.
+5. **El veredicto** → la cadena se ilumina y aparece la frase final:
+   *"El agua se está perdiendo en el tramo de calor"* o *"Todavía no se puede saber: faltan ~X años de datos"*.
+
+### 7.4 Accesibilidad
+
+Bilingüe ES/EN · paletas aptas para daltonismo · funciona en celular · modo ligero sin 3D · glosario en cada término técnico.
+
+---
+
+## 8. TerraVerdict MCP: el agua de Arequipa, conversable
+
+El [Model Context Protocol (MCP)](https://modelcontextprotocol.io) es un estándar abierto para que asistentes de IA y otros programas usen herramientas externas. TerraVerdict publica un **servidor MCP** que expone sus resultados precalculados. Así, cualquier cliente compatible (Claude, otros asistentes, editores de código o agentes propios) puede consultar el estado del agua de Arequipa.
+
+### 8.1 Herramientas del servidor
+
+| Herramienta | Qué devuelve |
+|---|---|
+| `estado_cadena(cuenca)` | Semáforo, tendencia y sello de cada tramo, más el diagnóstico |
+| `tramo(cuenca, tramo, desde, hasta)` | Serie, pendiente de Sen con IC, prueba de Mann-Kendall, sello y años para decidir |
+| `represas(cuenca)` | Superficie actual de cada represa frente a su historia y evaporación estimada |
+| `bofedales_prioritarios(cuenca, n)` | Los *n* bofedales con mayor prioridad, en GeoJSON |
+| `verificar_afirmacion(variable, region, desde, hasta, sentido)` | Respaldada / Contradicha / No decidible, con la causa |
+| `expediente(id)` | El JSON reproducible de cualquier resultado |
+
+### 8.2 Regla de oro: la IA conversa, pero no calcula
+
+El núcleo sigue siendo estadística transparente y reproducible. El modelo de lenguaje solo **traduce la pregunta** y **redacta la respuesta**; cada número que aparece en la respuesta viene de una herramienta y **cita su ID de expediente**. Si la herramienta dice "no decidible", el asistente no puede decir otra cosa.
+
+```text
+Usuario:  ¿Es verdad que en Arequipa llueve cada vez menos?
+Asistente → verificar_afirmacion("precipitacion", "chili_regulado", 2001, 2025, "baja")
+Asistente: No se puede afirmar todavía. La lluvia en la cabecera muestra una pendiente
+           de ±X mm/mes por década, pero no pasa la prueba de ventanas ni el filtro ENSO.
+           Con la variabilidad actual faltarían ~X años para decidir. [Expediente TV-CHILI-0003]
 ```
 *(Valores ilustrativos de formato: ningún número de este README es un resultado calculado.)*
 
-Se exporta como **tarjeta PNG con QR**, **PDF**, **JSON reproducible** y un **notebook Jupyter** que reproduce el cálculo.
+### 8.3 Conexión con otros programas
 
-### 7.4 Casos del Detective (demostraciones guiadas)
-
-Los casos están planteados como **preguntas a investigar**; su resultado depende de los datos y no se anuncia por adelantado.
-
-| Caso | Pregunta | Qué enseña |
+| Programa | Cómo se conecta | Para qué |
 |---|---|---|
-| 🕵️ **Caso 1: "¿Llueve menos en Arequipa?"** | ¿Hay una tendencia robusta de lluvia en la cuenca del Chili? | Comparar productos, ver la genealogía de datos y los años para decidir |
-| 🕵️ **Caso 2: "Mismo océano, historias opuestas"** | ¿La costa norte y el altiplano sur tienen tendencias opuestas con una causa común? | El rompecabezas del reto, explicado con ENSO |
-| 🕵️ **Caso 3: "El salto del satélite"** | ¿Hay celdas donde la tendencia cambia al considerar la transición TRMM→GPM? | Que los instrumentos también cambian |
-| 🕵️ **Caso 4: "Control positivo"** | ¿TerraVerdict reproduce una tendencia ya publicada en la literatura? | Que la herramienta funciona |
+| **Asistentes de IA con MCP** | Servidor TerraVerdict MCP (stdio o HTTP) | Preguntas en lenguaje natural de periodistas, docentes y gestores |
+| **QGIS** | GeoJSON y COG que exporta TerraVerdict; servidores MCP comunitarios para QGIS *(evaluar)* | El técnico de AUTODEMA o de la Reserva abre el mapa de bofedales en su herramienta de siempre |
+| **Hojas de cálculo** | Export CSV y conectores MCP de hojas de cálculo | Reporte mensual de represas sin programar |
+| **Blender** | Servidor MCP comunitario de Blender *(evaluar)* + NASADEM | Render cinematográfico de la cuenca para el video del pitch |
+| **Google Earth Engine** | Scripts de extracción del pipeline | Reprocesar la cuenca o cambiar de ciudad |
 
-### 7.5 Accesibilidad
-
-Bilingüe ES/EN · paletas aptas para daltonismo · funciona en móvil · modo de bajo ancho de banda (vista 2D sin terreno) · glosario contextual en cada término técnico.
+El servidor MCP **no necesita base de datos**: lee los mismos JSON estáticos que usa la web.
 
 ---
 
-## 8. Metodología científica
+## 9. El Sello de Confianza
 
-### 8.1 Preprocesamiento
+Todo el rigor del diseño original se conserva como el **sello** que acompaña a cada tramo. Una tendencia solo entra al diagnóstico si lo pasa.
 
-1. Descarga de los productos mensuales y recorte a la región.
-2. Control de calidad: banderas oficiales de cada producto y conteo de muestras válidas.
-3. **Anomalías desestacionalizadas:** se resta la climatología mensual del periodo base.
-4. Agregación por área ponderada por el área de cada celda (coseno de la latitud).
+| # | Prueba | Pregunta | Qué se calcula |
+|---|---|---|---|
+| 1 | **Ventanas** | ¿Depende del año de inicio o fin? | Tendencia para todas las ventanas con longitud mínima preregistrada; % que confirma el signo |
+| 2 | **Filtro ENSO** | ¿Es solo la secuencia de El Niño y La Niña? | `anomalía(t) = a + b·t + Σₖ cₖ·ONI(t−k) + ε(t)`, rezagos 0–3 meses; se repite con RONI |
+| 3 | **Sensor** | ¿Es un escalón del instrumento? | Modelo con escalón en transiciones documentadas (TRMM→GPM en junio de 2014; Landsat 5→7→8→9) |
+| 4 | **Independencia** | ¿Lo confirman fuentes que no comparten insumos? | Confirmaciones contadas por **familias** del grafo de procedencia, no por número de productos |
+| 5 | **Detectabilidad** | ¿Hay suficientes datos? | Tendencia mínima detectable y años para decidir (Weatherhead et al., 1998, y bootstrap por bloques) |
 
-### 8.2 Tendencia y significancia (núcleo del reto)
+**Núcleo estadístico:** anomalías desestacionalizadas · pendiente de Theil-Sen por década con IC 95 % · Mann-Kendall con corrección por autocorrelación (Hamed-Rao) · t-test con tamaño muestral efectivo · control FDR de Benjamini-Hochberg en mapas.
 
-| Elemento | Método | Referencia |
-|---|---|---|
-| Pendiente | Estimador de Theil-Sen, expresado por década, con IC 95 % | Sen (1968) |
-| Significancia no paramétrica | Mann-Kendall modificado por autocorrelación (Hamed-Rao) y prueba con preblanqueo (Yue-Wang) como sensibilidad | Hamed y Rao (1998); Yue y Wang (2004) |
-| Significancia paramétrica | t-test de la pendiente MCO con tamaño muestral efectivo n_eff = n(1−r₁)/(1+r₁) | Santer et al. (2000) |
-| Pruebas múltiples en el mapa | Control de la tasa de falsos descubrimientos de Benjamini-Hochberg, con α_FDR = 2α para campos con correlación espacial | Benjamini y Hochberg (1995); Wilks (2016) |
+**Veredictos por tramo:** 🟢 Robusta · 🟡 Frágil (se indica qué prueba falla) · ⚪ No decidible (con años para decidir) · 🔵 Sin tendencia detectable.
 
-### 8.3 Las cinco pruebas en detalle
+**Preregistro sellado:** los parámetros del análisis y la tabla de diagnóstico se guardan en `config/preregistro.yaml` y su hash SHA-256 aparece en cada veredicto.
 
-**Prueba 1. Laboratorio de ventanas.**
-Para cada par (inicio, fin) con longitud ≥ L_min (preregistrada, p. ej. 15 años), se calcula la pendiente y su significancia. Se reporta la fracción de ventanas con el mismo signo que la ventana completa y la fracción significativa. Pasa si la fracción del mismo signo supera el umbral preregistrado.
+**Genealogía de datos (ejemplos verificados):**
 
-**Prueba 2. Filtro ENSO.**
-Modelo: `anomalía(t) = a + b·t + Σₖ cₖ·ONI(t−k) + ε(t)`, con rezagos k = 0…3 meses y selección del rezago por una regla fija preregistrada. Se compara `b` con y sin el término ENSO y se reporta la varianza explicada por ENSO. Se repite con RONI como sensibilidad. Pasa si la tendencia mantiene signo y significancia tras incluir ENSO.
-
-**Prueba 3. Artefactos de sensor.**
-Para productos con transiciones documentadas, como IMERG en junio de 2014, se ajusta el modelo con un escalón en la fecha de transición y se compara con el modelo sin escalón (criterio de información y cambio en `b`). Como sensibilidad, se aplica la prueba de punto de cambio de Pettitt para ver si el quiebre más probable coincide con la transición. Pasa si la tendencia no depende del escalón.
-
-**Prueba 4. Concordancia ponderada por independencia.**
-Se ejecuta el mismo análisis en todos los productos disponibles para la variable. Los productos se agrupan en familias según el grafo de procedencia (insumos compartidos). Pasa si al menos dos **familias** independientes coinciden en el signo.
-
-**Prueba 5. Detectabilidad y años para decidir.**
-- **Analítica:** número de años necesarios para detectar una tendencia ω₀ con ruido AR(1) de desviación σ_N y autocorrelación φ (Weatherhead et al., 1998):
-
-  n* ≈ [ (3.3 · σ_N / |ω₀|) · √((1+φ)/(1−φ)) ]^(2/3)
-
-- **Empírica:** bootstrap por bloques móviles de los residuos (preserva la autocorrelación), inyección de tendencias sintéticas y cálculo de potencia al 80 %.
-- Salidas: **tendencia mínima detectable** con los datos actuales y **años adicionales necesarios** para decidir sobre la tendencia observada o la afirmada.
-
-### 8.4 Reglas de veredicto (preregistradas)
-
-| Veredicto | Condición |
+| Producto | Insumos documentados |
 |---|---|
-| 🟢 **Robusta** | Significativa tras FDR **y** supera las pruebas 1 a 4 |
-| 🟡 **Frágil** | Significativa, pero falla al menos una prueba (se indica cuál) |
-| ⚪ **No decidible** | No significativa **y** la potencia es insuficiente: se muestran los años para decidir |
-| 🔵 **Sin tendencia detectable** | No significativa **con** potencia suficiente para detectar la tendencia mínima de interés |
-
-En el modo Verificar, una afirmación es **Respaldada** si el veredicto es robusto y del mismo signo, **Contradicha** si es robusto y de signo opuesto, y **No decidible** en los demás casos, siempre con la causa.
+| IMERG Final Run | Satélites + ajuste mensual con pluviómetros **GPCC** ([NASA GPM](https://gpm.nasa.gov/taxonomy/term/1417)) |
+| GLDAS-2.1 Noah | Forzado con **GDAS**, **GPCP** y radiación **AGRMET** ([GES DISC](https://www.earthdata.nasa.gov/fr/data/catalog/ges-disc-gldas-noah025-m-2.1)) |
+| PISCOp V2.1 | Pluviómetros de SENAMHI + **CHIRP** ([SENAMHI](https://repositorio.senamhi.gob.pe/handle/20.500.12542/288)) |
 
 ---
 
-## 9. Arquitectura técnica
+## 10. Datos por tramo
+
+> Los IDs de Google Earth Engine (GEE) permiten extraer todos los tramos con un solo script. **Verificar cada ID en el catálogo de GEE antes de correr.**
+
+| Tramo | Producto | Resolución / periodo | ID en GEE | Restricción conocida |
+|---|---|---|---|---|
+| Cielo | GPM IMERG V07 Final (NASA/JAXA) | 0.1°, mensual, desde 2000 | `NASA/GPM_L3/IMERG_MONTHLY_V07` | Menor habilidad en terreno complejo; transición TRMM→GPM en 2014 |
+| Cielo (contraste) | MERRA-2 (NASA GMAO) | ½° × ⅝°, desde 1980 | `NASA/GSFC/MERRA/slv/2` (y colecciones de flujos) | Reanálisis: modelo + observaciones |
+| Calor | MODIS LST MOD11A2 v6.1 | 1 km, 8 días, desde 2000 | `MODIS/061/MOD11A2` | Nubes en temporada de lluvias |
+| Esponja | Landsat 5/7/8/9 Collection 2 L2 (NASA/USGS) | 30 m, desde 1984 | `LANDSAT/LT05/C02/T1_L2`, `LE07`, `LC08`, `LC09` | Landsat 7 con bandas faltantes desde 2003; armonizar sensores |
+| Esponja (contraste) | MODIS NDVI MOD13Q1 v6.1 | 250 m, 16 días, desde 2000 | `MODIS/061/MOD13Q1` | Bofedales pequeños se mezclan con el entorno |
+| Esponja (contraste) | SMAP L3 | 9–36 km, desde 2015 | `NASA/SMAP/SPL3SMP_E/...` | Solo ~11 años: contraste, no tendencia |
+| Pérdida | MODIS ET MOD16A2 v6.1 | 500 m, 8 días, desde 2001 | `MODIS/061/MOD16A2` | Producto de modelo con insumos MODIS y meteorología |
+| Pérdida (contraste) | GLDAS-2.1 Noah | 0.25°, desde 2000 | `NASA/GLDAS/V021/NOAH/G025/T3H` | Modelo *open-loop*; no usar para cerrar el balance |
+| Represas | JRC Global Surface Water (derivado de Landsat) | 30 m, mensual, 1984–2021 | `JRC/GSW1_4/MonthlyHistory` | Termina en 2021: se completa con Landsat/HLS |
+| Represas (reciente) | HLS L30/S30 (NASA) | 30 m, desde 2013 | `NASA/HLS/HLSL30/v002` | Combinar con índice de agua (MNDWI) |
+| Represas (verdad terrestre) | Volúmenes del sistema Chili regulado (AUTODEMA) | Diario | Fuente local, por conseguir | Disponibilidad histórica por confirmar |
+| Nieve | MODIS MOD10A1 v6.1 | 500 m, diaria, desde 2000 | `MODIS/061/MOD10A1` | Nubes; nieve fina o efímera puede no detectarse |
+| Terreno 3D | NASADEM (NASA) | 30 m, global | `NASA/NASADEM_HGT/001` | Elevación de la misión SRTM reprocesada |
+| Ríos | HydroRIVERS (HydroSHEDS) | Vectorial, global | Descarga directa | Solo para la animación |
+| ENSO | ONI y RONI (NOAA CPC) | Mensual desde 1950 | [CPC](https://cpc.ncep.noaa.gov/data/indices/) | No es dato NASA; desde 2026 NOAA usa RONI |
+| Base visual | NASA GIBS | WMTS | — | Solo visual |
+
+**Cambio respecto al diseño anterior:** el terreno pasa de Copernicus DEM a **NASADEM**, para que todo el núcleo visual y analítico use datos NASA. Copernicus DEM queda como alternativa.
+
+**Fuera del MVP, con motivo:** NISAR (sin historia suficiente), GRACE/GRACE-FO (~300 km, demasiado grueso para la cuenca) y FIRMS (fuera del foco). Giovanni y Worldview se usan para validar y para mostrar.
+
+---
+
+## 11. Arquitectura
 
 ```mermaid
 flowchart TB
     subgraph Fuentes
-        S1[GES DISC: IMERG, MERRA-2, GLDAS]
-        S2[NSIDC vía AppEEARS: MODIS, SMAP]
-        S3[NOAA CPC: ONI / RONI]
-        S4[SENAMHI: PISCOp]
-        S5[Copernicus DEM]
-        S6[NASA GIBS WMTS]
+        G[Google Earth Engine\nIMERG · MODIS · Landsat · JRC · NASADEM]
+        E[earthaccess / GES DISC\nMERRA-2 · GLDAS]
+        N[NOAA CPC: ONI / RONI]
+        L[AUTODEMA: volúmenes\nSENAMHI: estaciones]
     end
     subgraph Pipeline_Python
-        I[Ingesta: earthaccess, AppEEARS API] --> N[Normalización: xarray → Zarr]
-        N --> M[Motor estadístico\nSen · MK · t · FDR · 5 pruebas]
-        C[config.yaml preregistrado\n+ hash SHA-256] --> M
-        M --> O1[Rásters COG de veredictos]
-        M --> O2[Series por celda: Parquet/JSON]
-        M --> O3[Expedientes JSON]
-        S5 --> T[Teselas de terreno]
+        X[Extracción por tramo\nseries mensuales y rásters] --> P[Preproceso\nanomalías · QC · armonización Landsat]
+        P --> M[Motor estadístico\nSen · MK · t · FDR]
+        C[preregistro.yaml\n+ tabla de diagnóstico + hash] --> M
+        M --> S[Sello de Confianza\n5 pruebas]
+        S --> D[Detective\nreglas de diagnóstico + balance]
+        D --> O[JSON estáticos\nexpedientes · tramos · bofedales · represas]
     end
-    subgraph Web
-        F[React + TypeScript + Vite\nMapLibre GL JS v5 · Observable Plot]
+    subgraph Consumo
+        W[Web: React + MapLibre v5 + deck.gl\n3D · máquina del tiempo · historia guiada]
+        MCP[Servidor MCP\nPython SDK]
+        Q[QGIS · hojas de cálculo · Blender]
     end
-    S1 & S2 & S3 & S4 --> I
-    O1 & O2 & O3 & T --> F
-    S6 --> F
-    F -. polígonos a medida .-> A[API opcional: FastAPI]
-    A --> M
+    G & E & N & L --> X
+    O --> W
+    O --> MCP
+    MCP --> Q
+    O --> Q
 ```
 
 | Capa | Tecnología | Motivo |
 |---|---|---|
-| Ingesta | `earthaccess` (NASA), API de AppEEARS, API de NASA POWER | Acceso oficial con cuenta Earthdata gratuita |
-| Procesamiento | Python, `xarray`, `rioxarray`, `numpy`, `scipy`, `statsmodels`, `pymannkendall` | Estándar científico abierto |
-| Almacenamiento | Zarr (intermedio), Cloud-Optimized GeoTIFF y Parquet/JSON (salidas) | Servido como estático, sin base de datos |
-| Frontend | React + TypeScript + Vite, MapLibre GL JS v5 (globo + terreno), Observable Plot o D3 | Abierto y sin claves de pago |
-| API opcional | FastAPI, solo para polígonos personalizados | El MVP funciona 100 % estático |
-| Reproducibilidad | Config preregistrada con hash, versiones y DOIs de datos en cada Expediente, notebooks | Auditabilidad |
-| Calidad | `pytest` con casos de referencia y CI en GitHub Actions | Pruebas contra implementaciones de referencia |
-
-**Decisión clave: "precalcular primero".** Las regiones piloto se procesan por adelantado y se publican como archivos estáticos. Esto hace la app rápida, barata y fácil de alojar.
+| Extracción | Google Earth Engine (Python API), `earthaccess` | Todos los tramos en un script; sin descargar terabytes |
+| Procesamiento | Python, `xarray`, `numpy`, `scipy`, `statsmodels`, `pymannkendall` | Estándar científico abierto |
+| Salidas | JSON, GeoJSON, Cloud-Optimized GeoTIFF | Sitio estático, sin base de datos |
+| Web | React + TypeScript + Vite, MapLibre GL JS v5, deck.gl (`TripsLayer`, `MapboxOverlay`), Observable Plot | Abierto, 3D, sin claves de pago |
+| MCP | SDK oficial de MCP para Python (`FastMCP`) | ~150 líneas sobre los mismos JSON |
+| Reproducibilidad | Preregistro con hash, DOIs de datos y notebooks | Auditabilidad |
 
 ---
 
-## 10. Validación científica y métricas
+## 12. Plan para las 48 horas
+
+**Regla del equipo:** primero un resultado verdadero de punta a punta con un tramo; después se agregan tramos. Si algo no llega, se muestra como "en camino", nunca con datos inventados.
+
+| Bloque | Datos y motor | Web 3D | MCP e integración | Historia y pitch |
+|---|---|---|---|---|
+| **Día 1, mañana** | Polígono de la cuenca regulada (con trasvases) y de una represa; script GEE para IMERG y JRC | Escena MapLibre con NASADEM y volcanes | Esqueleto del servidor MCP con datos de prueba | Guion de la historia y frase del veredicto |
+| **Día 1, tarde** | Series de MODIS LST, nieve y NDVI de época seca; anomalías y Sen + MK | Ríos animados con deck.gl; contorno de la represa por año | `estado_cadena` y `tramo` leyendo JSON reales | Capturas de la máquina del tiempo (Landsat 1985 frente a hoy) |
+| **Día 1, noche** | Pruebas 1, 2 y 5 del sello; mapa de bofedales con Landsat | Semáforo de tramos y panel de veredicto | `bofedales_prioritarios` y export GeoJSON para QGIS | Borrador del video |
+| **Día 2, mañana** | Reglas de diagnóstico y cuenta de evaporación | Historia guiada (*scrollytelling*) | Demo en vivo: pregunta en lenguaje natural → respuesta con expediente | Ensayo del pitch |
+| **Día 2, tarde** | Congelar resultados y hash del preregistro | Pulido, celular y modo ligero | Instrucciones de instalación del MCP | Video final y README con resultados reales |
+
+**Si el tiempo aprieta, se recorta en este orden:** panorama de temporada → tramo Uso → prueba de sensor → evaporación. **Nunca se recortan** el sello de confianza ni la honestidad del "no decidible".
+
+---
+
+## 13. Validación
 
 | # | Validación | Cómo | Criterio de éxito |
 |---|---|---|---|
-| V1 | **Exactitud del motor** | Pruebas unitarias contra `pymannkendall`, `scipy` y series sintéticas con tendencia conocida | Coincidencia numérica dentro de la tolerancia |
-| V2 | **Calibración estadística** | Simulación Monte Carlo: series AR(1) sin tendencia más forzamiento tipo ENSO desbalanceado | La tasa de falsos positivos del veredicto "Robusta" se mantiene cerca de α, mientras la tendencia cruda la supera |
-| V3 | **Potencia** | Tendencias sembradas de magnitud conocida | Curvas de potencia coherentes con la fórmula de Weatherhead |
-| V4 | **Reproducción NASA** | Comparar series de área con las de Giovanni para el mismo producto, región y periodo | Diferencias dentro de la tolerancia preregistrada |
-| V5 | **Coherencia física** | Signo del mapa de correlación ENSO-lluvia contra la literatura para Perú | Coincidencia con lo publicado |
-| V6 | **Control positivo** | Reproducir una tendencia publicada (Caso 4) | Mismo signo y magnitud comparable |
-| V7 | **Verdad terrestre** *(si se obtienen datos)* | Estaciones SENAMHI en la cuenca del Chili | Celdas "Robustas" concuerdan con la estación más que las "Frágiles" |
-| V8 | **Usabilidad** | Prueba con estudiantes (UNSA): System Usability Scale y cuestionario antes y después sobre interpretación de tendencias | Mejora medible en la detección de tendencias engañosas |
-
-**Métricas de impacto que reportará la herramienta:** % del área decidible hoy por variable · años medios para decidir · % de tendencias "significativas" que resultan frágiles · % de celdas donde ENSO cambia el veredicto · % de celdas con posible artefacto de sensor.
+| V1 | Exactitud del motor | Pruebas contra `pymannkendall`, `scipy` y series sintéticas | Coincidencia numérica |
+| V2 | Calibración | Monte Carlo: AR(1) sin tendencia + forzamiento tipo ENSO | Falsos positivos del veredicto "Robusta" cerca de α |
+| V3 | Represa: superficie frente a volumen | Superficie Landsat contra volúmenes de AUTODEMA | Relación monótona y estable (curva área-volumen) |
+| V4 | Reproducción NASA | Series de área contra Giovanni para el mismo producto y región | Diferencia dentro de la tolerancia preregistrada |
+| V5 | Bofedales | Mapa contra inventarios publicados de la Reserva o contra fotointerpretación de muestras | Exactitud reportada con su matriz de confusión |
+| V6 | Balance de agua | P (IMERG) − ET (MODIS) − Q (AUTODEMA) frente a ΔS (Landsat) | Cierre dentro del error esperado; si no, alerta |
+| V7 | Usabilidad | Prueba con estudiantes de la UNSA, antes y después | Mejor interpretación de tendencias y del "no decidible" |
 
 ---
 
-## 11. Aplicación en Arequipa y Perú
+## 14. Escala global
 
-**Piloto:** cuenca Quilca-Vítor-Chili (Arequipa) y franja sur del Perú de la costa al altiplano.
+Muchas ciudades dependen del agua que baja de una montaña: **Lima, La Paz, El Alto, Santiago, Quito, Mendoza, Katmandú y las ciudades de Asia Central**. Todos los datos del núcleo son globales, así que replicarlo es cambiar un archivo:
 
-| Actor | Uso concreto |
+```yaml
+# config/cuencas/chili_regulado.yaml
+nombre: Sistema regulado del Chili
+ciudad: Arequipa
+poligono: datos/cuencas/chili_regulado.geojson   # incluye áreas de trasvase
+represas: [el_frayle, el_pane, pillones, aguada_blanca, chalhuanca, bamputane, dique_espanoles]
+temporada_lluvias: [12, 1, 2, 3]
+temporada_seca: [6, 7, 8, 9]
+tramos: [cielo, calor, esponja, perdida, represas, uso, nieve]
+```
+
+> **Mensaje para el jurado:** *"Empezamos con el agua de Arequipa, y sirve para cualquier ciudad que depende de una montaña."*
+
+El servidor MCP hace que la escala sea también **de uso**: un periodista de La Paz o un docente de Quito puede preguntarle a su asistente por su propia cuenca cuando esté configurada.
+
+---
+
+## 15. Limitaciones honestas
+
+- **Correlación no es causa.** El diagnóstico dice qué causa es **compatible** con los datos, no la demuestra.
+- **Series cortas.** Con ~25 años de MODIS e IMERG, muchos tramos saldrán "no decidibles". No lo escondemos: es información útil (dónde medir y cuántos años faltan), y Landsat extiende la historia donde puede.
+- **Resolución.** IMERG (0.1°) es grueso para la cabecera andina; IMERG tiene errores sistemáticos en zonas áridas y de montaña ([Manz et al., 2017](https://redi.cedia.edu.ec/document/86400)).
+- **La represa la opera una persona.** La superficie de un embalse refleja lluvia **y** decisiones de operación. Por eso se valida con los volúmenes y descargas de AUTODEMA.
+- **Armonización de Landsat.** Los sensores TM, ETM+, OLI y OLI-2 difieren; se armonizan y la prueba de sensor revisa los saltos en cada transición.
+- **Evaporación estimada.** Depende de la fórmula y de MERRA-2; se presenta con rango.
+- **Datos locales.** El acceso a series históricas de AUTODEMA y SENAMHI no está garantizado; V3 y V6 dependen de ello.
+
+---
+
+## 16. Cómo cubre el reto y los criterios
+
+| Objetivo del reto | Cómo lo resuelve TerraVerdict |
 |---|---|
-| Gobierno Regional, ANA, AUTODEMA, SEDAPAR | Saber qué tendencias de lluvia, nieve y humedad de la cuenca son robustas antes de usarlas en planificación |
-| SENAMHI Arequipa | Mapa de brechas: dónde una nueva estación reduciría más la incertidumbre |
-| UNSA y colegios | Material didáctico con datos de su propia región |
-| Periodistas locales | Verificar afirmaciones sobre sequía o lluvias antes de publicarlas |
+| 1. Identificar variables de interés | **El recorrido del agua elige las variables**, no el azar: cada tramo tiene una pregunta y un dato |
+| 2. Obtener datos para una región | Cuenca regulada del Chili (con trasvases), represas y bofedales; cualquier cuenca por configuración |
+| 3. Visualizar la serie temporal | Series por tramo, 3D animado, máquina del tiempo e historia guiada |
+| 4. Tasa de cambio y significancia | Sen por década con IC, Mann-Kendall corregido y t-test, más el Sello de Confianza |
+| "Una tendencia no significativa también es interesante" | "Años para decidir" y mapa de dónde medir |
+| "La misma variable puede tender en sentidos opuestos" | Los tramos se comparan entre sí: la lluvia puede no cambiar mientras la esponja se seca |
 
-Los productos se eligieron porque cubren Perú completo, así que el mismo flujo se aplica a cualquier cuenca peruana cambiando solo la región en la configuración.
-
----
-
-## 12. Escalabilidad internacional
-
-- **Datos globales:** IMERG, MERRA-2 y MODIS son globales; GLDAS cubre de 60°S a 90°N. El único componente específico de Perú es PISCOp, que es opcional y se reemplaza por el producto nacional equivalente de cada país.
-- **Replicación por configuración:** una nueva región es un archivo YAML (límites, variables, periodo).
-- **Prioridad:** regiones montañosas con pocos datos y alta influencia de ENSO, donde el problema de las tendencias engañosas es mayor.
-- **Conexión global:** biblioteca abierta de Casos del Detective donde docentes de cualquier país proponen casos mediante *pull requests* revisados, y Expedientes compartibles con enlace.
-- **Idiomas:** ES/EN en el MVP; la interfaz está preparada para más idiomas.
-
----
-
-## 13. Diferenciación frente a lo que ya existe
-
-| Solución | Qué hace | Qué le falta y TerraVerdict añade |
-|---|---|---|
-| **Giovanni (NASA)** | Series temporales y mapas de productos NASA sin programar | No evalúa robustez de tendencias ni explica la incertidumbre al público |
-| **Worldview (NASA)** | Explorar imágenes satelitales en el tiempo | Es visual, no estadístico |
-| **Otras entradas del mismo reto en GitHub** (globos 3D con Mann-Kendall y Sen; una con FDR y autocorrelación) | Detectan y mapean tendencias significativas | No encontramos en ellas pruebas de ventanas, filtro ENSO, artefactos de sensor, concordancia por independencia ni "años para decidir" |
-| **Climinator** (verificación de afirmaciones climáticas con LLM) | Contrasta afirmaciones contra textos científicos | No contrasta contra datos satelitales |
-| **Marco "Robust Trend Analysis"** (Remote Sensing, 2024) | Encadena Theil-Sen, Mann-Kendall contextual y FDR | Es un método de investigación, no una herramienta educativa interactiva con las cinco pruebas |
-
-> **Nota de honestidad:** cada técnica por separado es conocida en la literatura. La contribución de TerraVerdict es **integrarlas y automatizarlas por celda en una herramienta interactiva para el público**, con la concordancia ponderada por independencia y la visualización VSUP. No encontramos una herramienta que haga esto; no afirmamos que no exista.
-
----
-
-## 14. Viabilidad, costos y limitaciones
-
-### 14.1 Costos
-
-| Rubro | Costo |
+| Criterio | Apuesta |
 |---|---|
-| Datos | US$ 0 (cuenta Earthdata gratuita; DEM y GIBS gratuitos) |
-| Cómputo para regiones piloto | US$ 0 (una laptop; las regiones son de cientos a miles de celdas) |
-| Alojamiento | US$ 0 en planes gratuitos de hosting estático |
-| API opcional | Bajo costo, solo si se activa |
+| **Impacto** | Decisiones concretas de SEDAPAR, AUTODEMA, ANA y SENAMHI; mapa de bofedales para el fondo MERESE |
+| **Creatividad** | La cadena de tendencias, el detective con reglas preregistradas y el servidor MCP |
+| **Validez** | Sello de 5 pruebas, balance con fuentes independientes y validación con represas reales |
+| **Pertinencia** | Cubre los 4 objetivos del reto y sus consideraciones opcionales |
+| **Presentación** | Historia en 3D: el agua baja de los volcanes y la cadena se ilumina hasta el veredicto |
 
-### 14.2 Limitaciones reales
-
-- **Series cortas:** unos 25 años de IMERG y GLDAS-2.1 son pocos para separar tendencias de la variabilidad decadal; el Pacífico interdecadal también influye en la lluvia de los Andes centrales ([Sulca et al.](https://www.frontiersin.org/journals/earth-science/articles/10.3389/feart.2022.954954/pdf)). Por eso hablamos de "efecto de ENSO", no de "toda la variabilidad natural".
-- **Resolución:** 0.1°–0.5° es grueso para la topografía andina.
-- **Productos de modelo:** GLDAS y MERRA-2 son modelos con observaciones; sus tendencias heredan sus forzantes.
-- **Correlación no es causalidad:** la herramienta dice si una tendencia es robusta, no qué la causa.
-- **La relación ENSO-lluvia varía:** cambia de signo según la cercanía a la Amazonía y puede invertirse en el tiempo ([Jonaitis et al., 2021](https://geo.appstate.edu/sites/default/files/jonaitis_etal_2021_ijoc.pdf)), por eso se estima por celda.
-- **Latencia:** IMERG Final llega con ~3.5 meses de retraso: la herramienta es para tendencias, no para monitoreo en tiempo real.
-- **Datos de estaciones:** el acceso a series de SENAMHI no está garantizado; la validación V7 depende de ello.
-
----
-
-## 15. Alineación con los criterios y premios de Space Apps
-
-| Criterio | Cómo apuntamos al nivel 4 |
-|---|---|
-| **Impacto** | Problema global (tendencias engañosas) con caso local concreto (agua en Arequipa) |
-| **Creatividad** | Contrainterrogatorio de 5 pruebas, concordancia por independencia y VSUP, componentes originales del equipo |
-| **Validez** | Validación V1–V6 en entorno controlado y V7–V8 en entorno real |
-| **Pertinencia** | Cubre los 4 objetivos oficiales y las consideraciones opcionales del enunciado |
-| **Presentación** | Casos guiados con una historia clara: "una tendencia que parecía cierta… y el interrogatorio que la pone a prueba" |
-| **Diversidad** | Roles complementarios: datos, desarrollo, comunicación y validación científica |
-
-**Premios globales a los que apunta:** Mejor Uso de la Ciencia · Mejor Uso de los Datos · Impacto Local · *(secundarios)* Impacto Galáctico y Conexión Global.
-
----
-
-## 16. Hoja de ruta
-
-| Fase | Alcance |
-|---|---|
-| **Fase 0: Hackathon (48 h)** | Precipitación y temperatura · franja sur del Perú · núcleo del reto + pruebas 1, 2 y 5 · globo 3D con Mapa de Veredictos · Expediente · Casos 1 y 2 · video y README |
-| **Fase 1: 1–3 meses** | Pruebas 3 y 4 completas · 6 variables · Modo Gemelos y Corte 3D · validación V1–V6 · bilingüe |
-| **Fase 2: 3–6 meses** | Validación con estaciones (V7) · prueba de usabilidad con estudiantes (V8) · alianza con UNSA / SENAMHI · artículo científico |
-| **Fase 3: 6–12 meses** | Otras regiones andinas y montañosas · biblioteca abierta de casos · API pública |
+**Premios a los que apunta:** Impacto Local · Mejor Uso de los Datos · Mejor Uso de la Ciencia · Conexión Global.
 
 ---
 
@@ -508,34 +460,45 @@ Los productos se eligieron porque cubren Perú completo, así que el mismo flujo
 
 ```
 terraverdict/
-├── README.md
+├── readme.md
 ├── config/
-│   ├── preregistro.yaml         # parámetros del análisis (se hashea)
-│   └── regiones/                # una región = un YAML
-├── pipeline/                    # Python
-│   ├── ingesta/                 # earthaccess, AppEEARS, POWER, NOAA
-│   ├── preproceso/              # recorte, QC, anomalías
-│   ├── motor/                   # sen, mk, ttest, fdr
-│   ├── contrainterrogatorio/    # ventanas, enso, sensor, independencia, detectabilidad
-│   ├── genealogia/              # grafo de procedencia de productos
-│   └── exportar/                # COG, Parquet/JSON, expedientes
-├── web/                         # React + TS + MapLibre
-│   └── src/{globo,vistas,expediente,casos,glosario,i18n}
-├── notebooks/                   # reproducción y casos
-├── tests/                       # V1–V3
-└── docs/                        # metodología, fichas de datos, casos
+│   ├── preregistro.yaml          # parámetros + tabla de diagnóstico (se hashea)
+│   └── cuencas/chili_regulado.yaml
+├── datos/cuencas/                # polígonos de cuenca, represas y bofedales
+├── pipeline/
+│   ├── extraccion/               # scripts GEE y earthaccess por tramo
+│   ├── preproceso/               # anomalías, QC, armonización Landsat
+│   ├── motor/                    # sen, mk, ttest, fdr
+│   ├── sello/                    # ventanas, enso, sensor, independencia, detectabilidad
+│   ├── detective/                # reglas de diagnóstico y balance de agua
+│   ├── productos/                # bofedales prioritarios, evaporación, dónde medir
+│   └── exportar/                 # JSON, GeoJSON, COG
+├── mcp/
+│   └── servidor.py               # servidor MCP sobre los JSON exportados
+├── web/                          # React + TS + MapLibre + deck.gl
+│   └── src/{escena3d,cadena,maquina_tiempo,historia,veredicto,i18n}
+├── notebooks/
+└── tests/
 ```
 
 ```bash
-# 1. Credenciales (cuenta gratuita en https://urs.earthdata.nasa.gov)
-export EARTHDATA_USERNAME=... EARTHDATA_PASSWORD=...
-
-# 2. Pipeline
 pip install -r pipeline/requirements.txt
-python -m pipeline.run --region config/regiones/sur_peru.yaml
+```
 
-# 3. Web
+```bash
+earthengine authenticate
+```
+
+```bash
+python -m pipeline.run --cuenca config/cuencas/chili_regulado.yaml
+```
+
+```bash
 cd web && npm install && npm run dev
+```
+
+```bash
+python mcp/servidor.py
 ```
 
 ---
@@ -544,124 +507,51 @@ cd web && npm install && npm run dev
 
 | Integrante | Formación | Rol |
 |---|---|---|
-| Ower López | Ingeniería de Sistemas (UNSA) | Arquitectura, backend y pipeline |
-| *[Nombre]* | Ingeniería de Sistemas, enfoque en datos | Motor estadístico y validación |
-| *[Nombre]* | Comunicación | Narrativa, casos guiados y video |
-| *[Nombre]* | *[Cupo flexible]* | *[Rol]* |
+| Ower López | Ingeniería de Sistemas (UNSA) | Arquitectura, pipeline y servidor MCP |
+| *[Nombre]* | Ingeniería de Sistemas, enfoque en datos | Motor estadístico, sello y validación |
+| *[Nombre]* | Comunicación | Historia guiada, pitch y video |
+| *[Nombre]* | *[Cupo flexible]* | Web 3D (MapLibre + deck.gl) |
 
 ---
 
-## 19. Recursos y datos abiertos de la guía
-
-Lista completa de la guía de datos abiertos de la sede, con su uso en el proyecto.
-
-### Portales generales
-
-| Recurso | Enlace | Uso en TerraVerdict |
-|---|---|---|
-| Catálogo de datasets | https://data.nasa.gov | Búsqueda de productos |
-| APIs abiertas | https://api.nasa.gov | No usado (rovers, asteroides, APOD) |
-| Portal de datos de la Tierra | https://earthdata.nasa.gov | Fuente principal |
-| Cuenta Earthdata | https://urs.earthdata.nasa.gov | Necesaria para descargar |
-| Buscador de datasets | https://search.earthdata.nasa.gov | Localizar productos y granules |
-| Worldview | https://worldview.earthdata.nasa.gov | Contexto visual y enlace desde el Expediente |
-| Imágenes NASA | https://images.nasa.gov | Material para la presentación |
-| Retos oficiales | https://www.spaceappschallenge.org/2026/challenges/ | Enunciado del reto |
-
-### Retos de la Tierra
-
-| Recurso | Enlace | Uso |
-|---|---|---|
-| R01 Tendencias: Giovanni | https://giovanni.gsfc.nasa.gov | Validación V4 |
-| R02 Radar NISAR | https://search.asf.alaska.edu · https://nisar.jpl.nasa.gov | Descartado para tendencias (ver 6.3) |
-| R03 Clima por coordenadas: NASA POWER | https://power.larc.nasa.gov | Acceso a MERRA-2 por punto |
-| R03 Humedad del suelo: SMAP | https://smap.jpl.nasa.gov | Contraste reciente (desde 2015) |
-| R03/R04 Extracción por zona: AppEEARS | https://appeears.earthdatacloud.nasa.gov | Extracción de MODIS y SMAP |
-| R04 Incendios: FIRMS | https://firms.modaps.eosdis.nasa.gov | Fase futura |
-| R05 Sonificación | https://chandra.si.edu/sound/ | Inspiración para accesibilidad futura |
-
-### Luna y Marte
-
-| Recurso | Enlace | Uso |
-|---|---|---|
-| Moon Trek y Mars Trek | https://trek.nasa.gov | No aplica a este reto |
-| Planetary Data System | https://pds.nasa.gov | No aplica |
-| HiRISE | https://hirise.lpl.arizona.edu | No aplica |
-| Catálogo histórico de misiones | https://nssdc.gsfc.nasa.gov | No aplica |
-| Landsat y relieve (EarthExplorer) | https://earthexplorer.usgs.gov | Alternativa de relieve |
-
-### Ciencia, tripulación y cielo
-
-| Recurso | Enlace | Uso |
-|---|---|---|
-| R12 Experimentos en la Estación Espacial | https://psi.nasa.gov | No aplica |
-| R13 Biología espacial (OSDR) | https://osdr.nasa.gov | No aplica |
-| R13 Human Research Program | https://www.nasa.gov/hrp | No aplica |
-| R14 SPHEREx (IRSA) | https://irsa.ipac.caltech.edu | No aplica |
-
-### Agencias aliadas
-
-| Recurso | Enlace | Uso |
-|---|---|---|
-| ESA / Copernicus Data Space | https://dataspace.copernicus.eu | Copernicus DEM (terreno 3D) |
-| JAXA G-Portal | https://gportal.jaxa.jp | Fase futura (productos GSMaP) |
-| CSA (Canadá) | https://www.asc-csa.gc.ca | No usado |
-
-### Fuentes complementarias usadas
-
-| Recurso | Enlace |
-|---|---|
-| GES DISC (IMERG, MERRA-2, GLDAS) | https://disc.gsfc.nasa.gov |
-| NSIDC (MODIS nieve, SMAP) | https://nsidc.org/data |
-| NOAA CPC: ONI | https://psl.noaa.gov/data/timeseries/month/ONI/ |
-| NOAA CPC: índices (RONI) | https://cpc.ncep.noaa.gov/data/indices/ |
-| PISCOp V2.1 (SENAMHI) | https://piscoprec.github.io/webPISCO/en/about |
-| Copernicus DEM en AWS | https://registry.opendata.aws/copernicus-dem/ |
-| NASA GIBS | https://www.earthdata.nasa.gov/gibs |
-| MapLibre GL JS | https://maplibre.org |
-
----
-
-## 20. Referencias
+## 19. Referencias, licencias y atribuciones
 
 **Estadística y métodos**
 - Benjamini, Y. y Hochberg, Y. (1995). Controlling the false discovery rate. *JRSS-B*.
 - Hamed, K. H. y Rao, A. R. (1998). A modified Mann-Kendall trend test for autocorrelated data. *Journal of Hydrology*.
-- Mann, H. B. (1945); Kendall, M. G. (1975). Pruebas de tendencia no paramétricas.
 - Pettitt, A. N. (1979). A non-parametric approach to the change-point problem. *Applied Statistics*.
 - Santer, B. D. et al. (2000). Statistical significance of trends and trend differences in layer-average atmospheric temperature time series. *JGR*.
 - Sen, P. K. (1968). Estimates of the regression coefficient based on Kendall's tau. *JASA*.
 - Weatherhead, E. C. et al. (1998). Factors affecting the detection of trends. *JGR*.
 - Wilks, D. S. (2016). "The stippling shows statistically significant grid points". *BAMS*.
-- Yue, S. y Wang, C. (2004). The Mann-Kendall test modified by effective sample size. *Water Resources Management*.
 - Cortés, J. et al. (2021). Where are global vegetation greening and browning trends significant? *GRL*. [PDF](https://sites.bu.edu/cliveg/files/2021/03/Cortes-GRL-2021.pdf)
-- Robust trend analysis in remote sensing (2024). *Remote Sensing* 16(20):3886. [Enlace](https://mdpi.com/2072-4292/16/20/3886)
 
 **Visualización**
 - Correll, M., Moritz, D. y Heer, J. (2018). Value-Suppressing Uncertainty Palettes. *CHI 2018*. [Enlace](https://www.tableau.com/research/publications/value-suppressing-uncertainty-palettes)
 
-**Clima de los Andes y datos regionales**
+**Clima, agua y datos de la región**
 - Jonaitis, J. A. et al. (2021). Spatiotemporal patterns of ENSO-precipitation relationships in the tropical Andes of southern Peru and Bolivia. *Int. J. Climatology*. [PDF](https://geo.appstate.edu/sites/default/files/jonaitis_etal_2021_ijoc.pdf)
 - Sulca, J., Vuille, M. y Dong, B. Interdecadal variability of the austral summer precipitation over the Central Andes. *Frontiers in Earth Science*. [PDF](https://www.frontiersin.org/journals/earth-science/articles/10.3389/feart.2022.954954/pdf)
 - Manz, B. et al. (2017). Comparative ground validation of IMERG and TMPA in the tropical Andes. *J. Hydrometeorology*. [Enlace](https://redi.cedia.edu.ec/document/86400)
 - Aybar, C. et al. (2020). Construction of a high-resolution gridded rainfall dataset for Peru from 1981 to the present day. *Hydrological Sciences Journal*. DOI [10.1080/02626667.2019.1649411](https://doi.org/10.1080/02626667.2019.1649411)
+- Ley N.° 30215, Ley de Mecanismos de Retribución por Servicios Ecosistémicos (Perú, 2014).
+- Pekel, J.-F. et al. (2016). High-resolution mapping of global surface water and its long-term changes. *Nature* 540, 418–422.
 
 **Fichas de datos**
-- GPM IMERG Final Run: https://gpm.nasa.gov/taxonomy/term/1417
+- GPM IMERG: https://gpm.nasa.gov/taxonomy/term/1417
 - GLDAS-2.1 Noah mensual 0.25°: https://www.earthdata.nasa.gov/fr/data/catalog/ges-disc-gldas-noah025-m-2.1
 - MOD10A1F v6.1: https://nsidc.org/data/MOD10A1F/versions/61
 - SMAP SPL3SMP: https://nsidc.org/data/spl3smp/
-- NASA POWER, fuentes: https://power.larc.nasa.gov/docs/methodology/data/sources/
+- NASA POWER: https://power.larc.nasa.gov/docs/methodology/data/sources/
 - Disponibilidad de NISAR: https://nisar-docs.asf.alaska.edu/availability-overview/
+- Model Context Protocol: https://modelcontextprotocol.io
 
----
-
-## 21. Licencias y atribuciones
-
+**Licencias y atribuciones**
 - **Código:** MIT (propuesto).
-- **Datos NASA:** abiertos; se citan los DOIs de cada producto en cada Expediente.
-- **PISCOp V2.1:** CC BY-NC-ND según el repositorio de SENAMHI; se usa solo para validación y sin redistribuir derivados.
-- **Copernicus DEM:** licencia gratuita de Copernicus; se incluye la nota de atribución exigida para datos adaptados.
+- **Datos NASA y Landsat (NASA/USGS):** abiertos; se citan los DOIs en cada expediente.
+- **JRC Global Surface Water:** © EC JRC/Google, citar Pekel et al. (2016).
+- **PISCOp V2.1:** CC BY-NC-ND; solo para validación, sin redistribuir derivados.
+- **HydroSHEDS / HydroRIVERS:** según su licencia, con atribución.
 - **NASA GIBS:** "We acknowledge the use of imagery provided by services from NASA's Global Imagery Browse Services (GIBS), part of NASA's Earth Science Data and Information System (ESDIS)."
 - **ONI / RONI:** NOAA Climate Prediction Center.
 
@@ -670,6 +560,6 @@ Lista completa de la guía de datos abiertos de la sede, con su uso en el proyec
 ---
 
 **TerraVerdict** · NASA Space Apps Challenge 2026 · Arequipa, Perú
-*No basta con encontrar una tendencia. Hay que interrogarla.*
+*El agua de Arequipa no se pierde de golpe: se pierde en un tramo. Nosotros lo encontramos.*
 
 </div>
