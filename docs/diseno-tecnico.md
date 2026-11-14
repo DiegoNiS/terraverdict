@@ -27,7 +27,8 @@
 - O1. Series por tramo de la cadena del agua, con tendencia, significancia y Sello de Confianza (cubre el reto).
 - O2. Gemelo hidrológico mensual de cada represa piloto, calibrado y validado con observaciones satelitales.
 - O3. Atribución del cambio del aporte entre lluvia, temperatura y residuo, con incertidumbre.
-- O4. Pronóstico probabilístico de llenado (ESP) con evaluación retrospectiva y regla de publicación.
+- O4. Pronóstico probabilístico de llenado (ESP) con evaluación retrospectiva y regla de publicación, y prototipo de alerta de turbidez.
+- O4b. Monitor de colmatación de Aguada Blanca y mapa relativo de susceptibilidad a la erosión.
 - O5. Priorización de bofedales con restricción de presupuesto.
 - O6. Escenarios interactivos en el navegador.
 - O7. Acceso por web 3D, API REST y servidor MCP, desde el mismo núcleo.
@@ -76,7 +77,7 @@ Todo resultado publicable es un **Expediente** inmutable, identificado por un ha
 | **ADR-1** | Modelo **GR2M mensual y agregado** por subcuenca | HBV, SWAT, VIC, modelos distribuidos | Con pocos datos, 2 parámetros son identificables; uno distribuido sobreajusta. Es rápido para ensambles de miles de corridas y portable al navegador |
 | **ADR-2** | **Precalcular y servir estático**; solo los escenarios corren en vivo | Backend con cómputo bajo demanda | Costo cero, latencia mínima, sin estado en el servidor; el modelo tarda microsegundos por corrida |
 | **ADR-3** | Implementación de referencia en **Python** y port en **TypeScript** con **pruebas de paridad** | Solo API para los escenarios | Interactividad instantánea y funcionamiento sin conexión; la paridad evita que las dos versiones diverjan |
-| **ADR-4** | Extracción con **Google Earth Engine** y `earthaccess` como complemento | Descarga masiva con `earthaccess` y AppEEARS | Las reducciones zonales en el servidor ahorran horas; `earthaccess` cubre lo que GEE no tiene (IMERG Late) |
+| **ADR-4** | Extracción con los **recursos oficiales del reto**: Giovanni, Hydrology Time Series, AppEEARS, Earthdata/PO.DAAC (IMERG, SWOT, ICESat-2, HLS), Climate Data Online, KNMI Climate Explorer y CSA, más POWER y EarthExplorer de la guía. Google Earth Engine queda como acelerador opcional | Todo en Google Earth Engine | Alineación con el reto y con la regla de usar los recursos provistos; cada extractor tiene una interfaz común, así que cambiar de fuente no afecta al núcleo |
 | **ADR-5** | **LLM solo en la interfaz**, vía MCP | Agente que calcula | Reproducibilidad y cero alucinación numérica: el LLM solo cita expedientes |
 | **ADR-6** | **No publicar** un pronóstico sin habilidad (CRPSS ≤ 0) | Publicar siempre con una advertencia | Una advertencia no compensa una mala decisión; "no sabemos" es una salida válida |
 | **ADR-7** | **NASADEM** para terreno y drenaje | Copernicus DEM | Datos NASA en el núcleo; resolución equivalente para la cuenca |
@@ -116,6 +117,7 @@ Los contratos se validan con esquemas (`pandera` o `pydantic`); **un contrato ro
 ### 4.3 Preprocesamiento
 
 - Agregación zonal ponderada por área de píxel sobre cada subcuenca (incluidos los trasvases).
+- **Fuentes por variable:** series de área de IMERG, MERRA-2 y GLDAS desde **Giovanni**; series largas por punto de GLDAS desde **Hydrology Time Series (data rods)**; MODIS, SMAP, HLS y NASADEM desde **AppEEARS**; cambio de almacenamiento desde **SWOT LakeSP** (PO.DAAC); estación de Arequipa desde **Climate Data Online**; Niño3.4 y CMIP6 desde **KNMI Climate Explorer**; temperatura por punto desde **POWER**; Landsat desde **EarthExplorer**.
 - **Temperatura corregida por altitud:** `T_sub = T_MERRA2 + Γ·(z_MERRA2 − z_sub)`, con `Γ = 6.5 °C/km` (preregistrado; sensibilidad con 5.5 y 7.5) y `z_sub` de NASADEM.
 - **Armonización de Landsat:** coeficientes de Roy et al. (2016) para llevar ETM+ y TM a OLI; máscara de nubes con `QA_PIXEL`; las bandas faltantes de Landsat 7 se tratan como nulos y no se interpolan.
 - **Superficie de agua:** MNDWI con umbral de Otsu por escena dentro del polígono máximo de la represa; los meses con menos del 80 % del polígono libre de nubes se descartan. Antes de 2022 se usa JRC GSW, y en el periodo de solape se compara con el método propio.
@@ -182,7 +184,7 @@ V(t+1) = V(t) + I(t) + P(t)·A(V) − E_ow(t)·A(V) − O(t) − D(t)
 2. **Altura del agua:** ICESat-2 ATL13 (desde 2018) y SWOT LakeSP (desde 2023), ambos de NASA. *(Verificar la cobertura de cada represa.)*
 3. **Hipsometría** de NASADEM por encima del nivel del agua que tenía el embalse en febrero de 2000.
 
-Los pares (área, altura) definen `A(h)`, y `ΔV = ∫ A(h) dh` da los **cambios de volumen** que necesita el balance. Si AUTODEMA entrega volúmenes, se usan para validar la curva.
+Los pares (área, altura) definen `A(h)`, y `ΔV = ∫ A(h) dh` da los **cambios de volumen** que necesita el balance. Desde 2023, SWOT LakeSP (versión D) publica además una **estimación directa del cambio de almacenamiento** por lago, que se usa como observación principal del periodo reciente; la curva sirve para llevar el volumen hacia atrás con el archivo Landsat. Si AUTODEMA entrega volúmenes, se usan para validar.
 
 ### 5.5 Calibración e incertidumbre
 
@@ -238,11 +240,26 @@ El IC del CRPSS se obtiene por bootstrap sobre los años. Además se presenta un
 - **Beneficio:** `b_i = area_i · max(0, −sen_i) · c_i · r_i`, con `r_i ∈ {1, 0.5, 0}` según el veredicto (robusta, frágil o no decidible).
 - **Optimización:** mochila 0-1: maximizar `Σ b_i·x_i` sujeto a `Σ costo_ha·area_i·x_i ≤ presupuesto`. Se resuelve por programación dinámica o con OR-Tools; con cientos de bofedales tarda milisegundos.
 
-### 5.9 Escenarios
+### 5.9 Alerta de turbidez (prototipo)
+
+- **Subcuencas de riesgo:** las que drenan a la captación de La Tomilla sin pasar por un embalse (quebradas del Misti y el Chachani, y el tramo entre Aguada Blanca y la captación), delimitadas con NASADEM.
+- **Predictores:** lluvia de IMERG Early Run acumulada en 3, 6, 12 y 24 h sobre cada subcuenca; humedad antecedente (lluvia de 7 días); susceptibilidad media a la erosión (sección 5.10).
+- **Eventos:** cortes documentados por turbidez y huaicos (marzo de 2024; dos episodios en febrero de 2025) más los días de lluvia sin corte como controles.
+- **Modelo:** con pocos eventos, un **umbral de intensidad y duración** (estilo de los umbrales de huaicos) elegido para maximizar aciertos con un límite de falsas alarmas, en validación cruzada dejando un evento fuera. Con series diarias de turbidez de SEDAPAR se migra a una regresión logística.
+- **Métricas:** probabilidad de detección, tasa de falsas alarmas y anticipación media en horas. Se publica siempre como **prototipo**, con el número de eventos usados.
+
+### 5.10 Erosión y colmatación
+
+- **RUSLE** (Renard et al., 1997): `A = R · K · LS · C · P`, con `R` derivado de la intensidad de la lluvia de IMERG, `K` de mapas de suelos globales (SoilGrids, como dato complementario), `LS` de NASADEM y `C` del NDVI de Landsat o MODIS. Se usa como **índice relativo** de susceptibilidad para priorizar, no como tonelaje absoluto.
+- **Espejo de agua de Aguada Blanca:** para cada año, la máxima área de agua observada en los meses de embalse lleno (Landsat, y radar RCM o Sentinel-1 cuando hay nubes). Se aplica una tendencia de Sen con Sello de Confianza y, en paralelo, un índice de vegetación sobre el delta.
+- **Coherencia volumétrica:** desde 2023, el cambio de almacenamiento de SWOT se compara con el aporte del gemelo menos las descargas. Un residuo negativo persistente es compatible con la pérdida de volumen útil.
+- **Turbidez en embalses:** la reflectancia roja (Landsat, HLS, Sentinel-2) se convierte en turbidez con un algoritmo semianalítico (Nechad et al., 2010). Se usa para seguir las plumas de sedimento después de cada evento.
+
+### 5.11 Escenarios
 
 Se perturban los forzantes del periodo base y se corren todos los parámetros aceptables:
 
-- Temperatura: `T + ΔT` → nueva `PE` por Oudin y nueva `E_ow`.
+- Temperatura: `T + ΔT` → nueva `PE` por Oudin y nueva `E_ow`. Los valores de `ΔT` y `ΔP` de los escenarios futuros salen del conjunto CMIP6 de **KNMI Climate Explorer** para la región (mediana y rango de los modelos).
 - Lluvia: `P · (1 + ΔP)`.
 - Evaporación del embalse: `E_ow · (1 − η)`.
 - Regla de descargas alternativa.
@@ -289,7 +306,9 @@ Se valida con un esquema JSON versionado (`schema_version`). La web, la API y el
 | `GET /represas/{id}/atribucion` | `atribuir_cambio` | Precalculado |
 | `GET /represas/{id}/pronostico?umbral=` | `pronostico_temporada` | Precalculado; el umbral se aplica sobre las trazas guardadas |
 | `POST /represas/{id}/escenario` | `simular_escenario` | En vivo (milisegundos) |
-| `POST /cuencas/{id}/bofedales/priorizar` | `priorizar_bofedales` | En vivo (milisegundos) |
+| `POST /cuencas/{id}/merese/priorizar` | `priorizar_merese` | En vivo (milisegundos) |
+| `GET /captaciones/{id}/turbidez` | `alerta_turbidez` | Actualización con IMERG Early |
+| `GET /represas/{id}/colmatacion` | `colmatacion` | Precalculado |
 | `POST /verificar` | `verificar_afirmacion` | Precalculado |
 | `GET /expedientes/{id}` | `expediente` | Estático |
 
@@ -315,7 +334,7 @@ Se valida con un esquema JSON versionado (`schema_version`). La web, la API y el
 
 | Tipo | Qué se prueba | Herramienta |
 |---|---|---|
-| Unidad | Sen, Mann-Kendall, FDR, Oudin, GR2M, balance, mochila | `pytest` |
+| Unidad | Sen, Mann-Kendall, FDR, Oudin, GR2M, balance, mochila, RUSLE, umbrales de turbidez | `pytest` |
 | Referencia | GR2M frente a airGR; Mann-Kendall frente a `pymannkendall`; superficie de agua frente a JRC en el periodo de solape | Pruebas con datos guardados |
 | Propiedades | Conservación de masa (`ΔV = entradas − salidas`), no negatividad, monotonía de `A(V)`, invariancia del CRPS | `hypothesis` |
 | Paridad | Python y TypeScript dan lo mismo con 1000 forzantes aleatorios (tolerancia 1e-9) | Pruebas cruzadas en CI |
@@ -359,6 +378,9 @@ CI con GitHub Actions: lint, tipos (`mypy`, `tsc`), pruebas y validación de con
 | R6 | Confundir operación con clima | Media | Alto | Atribución sobre el aporte; residuo declarado | Residuo dominante |
 | R7 | Tiempo insuficiente en el hackathon | Alta | Medio | Orden de recorte preacordado (README, sección 11) | Retraso de 3 h sobre el plan |
 | R8 | Cobertura de ICESat-2 o SWOT insuficiente en la represa piloto | Media | Medio | Hipsometría de NASADEM; elegir la represa piloto según los datos | Sin pasadas útiles |
+| R9 | Sin cobertura abierta de RCM sobre Arequipa | Alta | Bajo | Sentinel-1 (Copernicus) con el mismo método | Catálogo vacío |
+| R10 | Pocos eventos de turbidez | Alta | Medio | Prototipo con umbral; pedir a SEDAPAR series de turbidez | Menos de 5 eventos |
+| R11 | Algunos sitios de datos no responden durante el hackathon | Media | Medio | Descargar todo en las primeras horas y guardar copias con hash | Error de acceso |
 
 ---
 

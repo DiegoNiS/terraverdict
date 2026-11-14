@@ -8,7 +8,7 @@
 [![NASA Space Apps 2026](https://img.shields.io/badge/NASA%20Space%20Apps-2026-0B3D91)](https://www.spaceappschallenge.org/2026/challenges/earth-system-trend-detective/)
 [![Reto](https://img.shields.io/badge/Reto-Be%20An%20Earth%20System%20Trend%20Detective!-0E9F92)](https://www.spaceappschallenge.org/2026/challenges/earth-system-trend-detective/)
 [![Sede](https://img.shields.io/badge/Sede-Arequipa%2C%20Per%C3%BA-C8102E)](#)
-[![Datos](https://img.shields.io/badge/Datos-Giovanni%20%C2%B7%20POWER%20%C2%B7%20AppEEARS%20%C2%B7%20Earthdata%20%C2%B7%20Landsat-5B6B7F)](#7-datos-recursos-oficiales-de-la-guía)
+[![Datos](https://img.shields.io/badge/Datos-Giovanni%20%C2%B7%20POWER%20%C2%B7%20AppEEARS%20%C2%B7%20Earthdata%20%C2%B7%20Landsat-5B6B7F)](#7-datos-recursos-oficiales-del-reto-y-de-la-guía)
 [![MCP](https://img.shields.io/badge/MCP-servidor%20abierto-7B3FE4)](#6-componentes-de-la-solución)
 [![Diseño técnico](https://img.shields.io/badge/Docs-dise%C3%B1o%20t%C3%A9cnico-333)](docs/diseno-tecnico.md)
 
@@ -28,7 +28,7 @@
 **Parte II · Planteamiento de la solución**
 
 6. [Componentes de la solución](#6-componentes-de-la-solución)
-7. [Datos: recursos oficiales de la guía](#7-datos-recursos-oficiales-de-la-guía)
+7. [Datos: recursos oficiales del reto y de la guía](#7-datos-recursos-oficiales-del-reto-y-de-la-guía)
 8. [Experiencia: Arequipa en 3D](#8-experiencia-arequipa-en-3d)
 9. [Arquitectura](#9-arquitectura)
 10. [Validación e indicadores](#10-validación-e-indicadores)
@@ -64,6 +64,28 @@ Las tres caras tienen **una raíz común**: el estado de la **cabecera de cuenca
 4. 🎯 **Prioriza** dónde invertir el fondo de conservación que **ya existe**: el MERESE de SEDAPAR, con **US$ 1,5 millones comprometidos para 2024–2026** ([Forest Trends](https://www.forest-trends.org/wp-content/uploads/2024/10/Brochure-Merese-COP-14.01.25.pdf)).
 
 > **La frase para el jurado:** *"Arequipa no tiene un problema de agua: tiene un problema de cuenca. TerraVerdict lo mide desde el espacio, lo explica y dice dónde actuar, y sirve para cualquier ciudad que vive de una montaña."*
+
+### Por qué esta idea puede ganar
+
+| Lo que suele pasar en este reto | Lo que hace TerraVerdict |
+|---|---|
+| Un globo con una tendencia y un valor p | Una **cadena** de tendencias que explica una crisis real, con el Sello de Confianza en cada eslabón |
+| Variables elegidas al azar | Variables elegidas por el **recorrido del agua**, que es lo que el reto marca como lo difícil |
+| "Es significativo" | "Es robusto", "es frágil por El Niño" o "**faltan X años para saberlo**" |
+| Usar uno o dos recursos | Usar **todos los recursos oficiales del reto** con un papel concreto (sección 7.1), incluido **SWOT** para medir el agua de las represas |
+| Impacto hipotético | **Tres crisis documentadas** (2023, 2024, 2025) y un **fondo real** (US$ 1,5 M de MERESE) que necesita prioridades |
+| Se queda en Arequipa | Un archivo de configuración por ciudad; el patrón se repite de Lima a Katmandú |
+
+### La demo en 5 minutos
+
+1. **0:00** · *"En noviembre de 2023, Arequipa tenía las represas al 39 %. En febrero de 2025 tenía las represas llenas y se quedó sin agua igual."* La cámara 3D vuela del Misti a las represas.
+2. **0:45** · **Cadena del agua:** los tramos se encienden uno a uno, cada uno con su veredicto y su sello. Uno sale ⚪: *"faltan ~X años para saberlo"*.
+3. **1:45** · **Atribución:** *"del cambio en el aporte a El Frayle, tanto se explica por el calor y tanto por la lluvia"*.
+4. **2:30** · **Turbidez:** se repite la lluvia de IMERG de febrero de 2025 sobre las quebradas y el semáforo se pone en rojo horas antes del corte.
+5. **3:15** · **Aguada Blanca:** la máquina del tiempo muestra 1985 frente a hoy, junto con el cambio de almacenamiento medido por SWOT.
+6. **3:45** · **MERESE:** se mueve el presupuesto y el mapa elige los bofedales y laderas que más agua y menos sedimento aportan por cada sol.
+7. **4:30** · **MCP:** en vivo, alguien pregunta a un asistente de IA *"¿es verdad que en Arequipa llueve menos?"* y la respuesta cita su expediente.
+8. **4:50** · *"Arequipa no tiene un problema de agua: tiene un problema de cuenca. Y esto sirve para cualquier ciudad que vive de una montaña."*
 
 ---
 
@@ -209,24 +231,26 @@ El recorrido del agua define **qué variables mirar**, que es lo que el reto se�
 
 | Tramo | Pregunta | Dato NASA | Herramienta de la guía |
 |---|---|---|---|
-| ☁️ Cielo | ¿Llueve menos en la cabecera? ¿Hay más lluvias extremas? | GPM IMERG V07 (mensual y diaria) | **Giovanni** · Earthdata Search |
-| 🌡️ Calor | ¿Sube la temperatura? | MERRA-2 (T2M desde 1981) · MODIS LST | **NASA POWER** · AppEEARS |
+| ☁️ Cielo | ¿Llueve menos en la cabecera? ¿Hay más lluvias extremas? | GPM IMERG V07 (mensual y diaria) · estación de Arequipa (GHCN) | **Giovanni** · **Climate Data Online** · Earthdata Search |
+| 🌡️ Calor | ¿Sube la temperatura? | MERRA-2 (T2M desde 1981) · MODIS LST · estación de Arequipa (GHCN) | **NASA POWER** · **AppEEARS** · **Climate Data Online** |
 | ❄️ Nieve | ¿Sube la línea de nieve del Chachani, el Misti y el Pichu Pichu? *(indicador de calentamiento, no de volumen)* | MODIS MOD10A1 | **AppEEARS** |
 | 🌱 Esponja | ¿Pierden verdor los bofedales en la época seca? | Landsat 1984–hoy · MODIS NDVI | **EarthExplorer** · AppEEARS |
-| 💧 Suelo | ¿Se seca el suelo? | SMAP (desde 2015) · GLDAS | **SMAP** · Giovanni |
-| 💨 Pérdida | ¿Aumenta la evapotranspiración? | MODIS ET (MOD16) · GLDAS | AppEEARS · Giovanni |
-| 🏞️ Represas | ¿Baja el espejo de agua? | Landsat · HLS · Sentinel-2 | EarthExplorer · Earthdata · **Copernicus** |
+| 💧 Suelo | ¿Se seca el suelo? | SMAP (desde 2015) · GLDAS | **Hydrology Time Series (data rods)** · AppEEARS · Giovanni |
+| 💨 Pérdida | ¿Aumenta la evapotranspiración? | MODIS ET (MOD16) · GLDAS | AppEEARS · **Hydrology Time Series** · Giovanni |
+| 🏞️ Represas | ¿Baja el agua almacenada? | **SWOT** (cambio de almacenamiento desde 2023) · Landsat desde 1984 · HLS · radar RCM o Sentinel-1 bajo nubes | Earthdata (PO.DAAC) · EarthExplorer · **CSA** · Copernicus |
 
-**Sello de Confianza.** Cada tendencia pasa cinco pruebas antes de usarse: (1) **ventanas**: ¿depende del año de inicio?; (2) **El Niño**: ¿desaparece al controlar por ONI/RONI?; (3) **sensor**: ¿es un salto del satélite (TRMM→GPM en 2014; Landsat 5→7→8→9)?; (4) **independencia**: ¿la confirman fuentes que no comparten insumos?; (5) **detectabilidad**: ¿cuántos años faltan para decidir? Los métodos son Theil-Sen, Mann-Kendall con corrección por autocorrelación y FDR en mapas, con parámetros preregistrados y su hash SHA-256 publicado.
+**Sello de Confianza.** Cada tendencia pasa cinco pruebas antes de usarse: (1) **ventanas**: ¿depende del año de inicio?; (2) **El Niño**: ¿desaparece al controlar por Niño3.4 (KNMI Climate Explorer) y ONI/RONI (NOAA)?; (3) **sensor**: ¿es un salto del satélite (TRMM→GPM en 2014; Landsat 5→7→8→9)?; (4) **independencia**: ¿la confirman fuentes que no comparten insumos, incluida la estación de Arequipa en Climate Data Online?; (5) **detectabilidad**: ¿cuántos años faltan para decidir? Los métodos son Theil-Sen, Mann-Kendall con corrección por autocorrelación y FDR en mapas, con parámetros preregistrados y su hash SHA-256 publicado.
 
 **Veredictos:** 🟢 robusta · 🟡 frágil (indica qué prueba falla) · ⚪ no decidible (indica cuántos años faltan) · 🔵 sin tendencia detectable.
 
 ### C2 · Gemelo hidrológico y atribución: ¿a dónde se va el agua?
 
 - **Gemelo:** modelo mensual GR2M por subcuenca de cada represa, alimentado con lluvia de IMERG y evapotranspiración potencial calculada con la temperatura de POWER/MERRA-2 corregida por altitud (NASADEM). Se acopla a un balance del embalse: `V(t+1) = V(t) + aporte − evaporación − descargas`.
-- **Calibración sin batimetría:** la superficie de agua (Landsat/HLS) se combina con la altura del agua (ICESat-2 ATL13 y SWOT, de NASA) y con la topografía (NASADEM) para obtener los **cambios de volumen**. Se valida con los volúmenes que publica AUTODEMA.
+- **Calibración sin batimetría:** **SWOT** (recurso oficial del reto) entrega el cambio de almacenamiento de cada embalse desde 2023. Hacia atrás, la superficie de agua de Landsat (1984–hoy) se convierte en volumen con la curva área-altura que se obtiene de SWOT, ICESat-2 y NASADEM. Se valida con los volúmenes que publica AUTODEMA.
 - **Validación honesta:** se calibra con 2001–2015 y se valida con 2016–2025. Si no pasa, el gemelo no se usa y la app solo muestra observaciones.
 - **Atribución contrafactual:** se corre el gemelo con el clima real y sin la tendencia de la lluvia, o sin la de la temperatura. Resultado: *"del cambio en el aporte a El Frayle, entre A y B % es compatible con el calor, entre C y D % con la lluvia, y E % no lo explica el clima (cuenca, uso, operación)"*.
+
+**Escenarios futuros con CMIP6:** los cambios de temperatura y lluvia proyectados para la región se toman de **KNMI Climate Explorer**, con varios modelos, y se pasan por el gemelo. Así, el escenario *"Arequipa 2050"* se basa en proyecciones publicadas y no en un número inventado.
 
 ### C3 · Anticipación: escasez y turbidez
 
@@ -242,7 +266,9 @@ Se presenta como **prototipo** con pocos eventos, y lo decimos.
 
 ### C4 · Colmatación y erosión: la represa que se llena de tierra
 
+- **Volumen directo desde 2023:** SWOT mide el cambio de almacenamiento de Aguada Blanca. Comparado con el aporte que estima el gemelo, ayuda a ver si el embalse se está llenando de sedimento.
 - **Espejo de agua a nivel alto:** para cada año desde 1984, Landsat mide el área de agua libre de Aguada Blanca en los meses de embalse máximo. Si la represa se llena de sedimento, el delta avanza, aparece vegetación sobre él y el espejo se reduce. La máquina del tiempo muestra 1985 frente a hoy.
+- **Bajo nubes:** el radar (RCM de la CSA si hay cobertura, o Sentinel-1) mide el espejo de agua durante la temporada de lluvias, justo cuando Landsat no ve. Para empezar se reutiliza el tutorial de radar de la CSA.
 - **Turbidez satelital:** la reflectancia roja de Landsat, HLS y Sentinel-2 se relaciona con la turbidez del agua. Se usa para seguir las plumas de sedimento en los embalses después de las lluvias.
 - **¿De dónde viene el sedimento?** Un mapa de susceptibilidad a la erosión (RUSLE) combina la erosividad de la lluvia (IMERG), la pendiente (NASADEM) y la cobertura vegetal (Landsat/MODIS).
 
@@ -266,9 +292,33 @@ El mismo núcleo se ofrece por tres puertas:
 
 ---
 
-## 7. Datos: recursos oficiales de la guía
+## 7. Datos: recursos oficiales del reto y de la guía
 
-Todo se obtiene con los recursos que da la guía de la sede ([lista completa](docs/recursos-guia.md)). Para el hackathon, el orden importa: **las solicitudes de AppEEARS tardan horas en procesarse, así que se envían en la primera hora.**
+### 7.1 Recursos oficiales del reto, revisados uno por uno
+
+Cada recurso que lista la página del reto se revisó y tiene un papel concreto en TerraVerdict, o un motivo explícito para no usarlo.
+
+| Recurso oficial del reto | Qué ofrece | Uso en TerraVerdict | Componente |
+|---|---|---|---|
+| [**Giovanni**](https://giovanni.gsfc.nasa.gov/) (NASA) | Series de tiempo de área y descarga de datos de cientos de variables (IMERG, MERRA-2, GLDAS, MODIS) | **Fuente principal de las series del reto** y referencia para validar que nuestras series coinciden con las de NASA | C1, validación |
+| [**Hydrology Time Series / Data Rods**](https://disc.gsfc.nasa.gov/information/tools?title=Hydrology%20Time%20Series) (NASA GES DISC) | Series largas por punto de modelos hidrológicos (GLDAS) vía servicio REST ([Earthdata](https://www.earthdata.nasa.gov/learn/articles/data-rods-for-hydrology)) | Series de humedad del suelo, escorrentía y evapotranspiración por subcuenca; las series largas de GLDAS-2.0 ayudan a reducir los "no decidibles" *(verificar el periodo disponible)* | C1 (suelo, pérdida), C2 |
+| [**AppEEARS**](https://appeears.earthdatacloud.nasa.gov/) (NASA) | Extracción por polígono y series de MODIS, SMAP, HLS y NASADEM | NDVI de bofedales, temperatura de superficie, nieve, ET, SMAP y terreno | C1, C4, C5 |
+| [**Climate Data Online**](https://www.ncei.noaa.gov/cdo-web/) (NOAA NCEI) | Archivo global de estaciones (GHCN) con mapa | Estación de Arequipa (aeropuerto Rodríguez Ballón) como **verdad terrestre independiente** de lluvia y temperatura para el Sello de Confianza *(ID y periodo de la estación por confirmar en CDO)* | C1 (prueba de independencia) |
+| [**Artículo SeaWiFS en ríos**](https://ntrs.nasa.gov/api/citations/20090042747/downloads/20090042747.pdf) (Acker et al., 2009, NASA) | Ejemplo de NASA: series de Giovanni y prueba de significancia en regiones influidas por ríos | **Precedente metodológico:** encontró que las crecidas extraordinarias dominan las series costeras ([EARSeL](https://eproceedings.uni-oldenburg.de/website/vol08_2/08_2_acker1.html)). Por eso usamos estimadores robustos (Sen) y tratamos aparte los eventos extremos, como las lluvias de 2024 y 2025 | C1, C3 |
+| [**KNMI Climate Explorer**](https://climexp.knmi.nl/) (aliado) | Índices como Niño3.4 (ERSST v5, desde 1854), estaciones, correlaciones, tendencias y escenarios CMIP6 ([KNMI](https://climexp.knmi.nl/help/systemseries.shtml)) | Niño3.4 para el filtro ENSO, mapas de correlación con la lluvia y **escenarios CMIP6 de temperatura y lluvia futuras** para el gemelo | C1 (ENSO), C2 (escenarios) |
+| [**Métodos para detectar tendencias**](https://medium.com/%40snp.kriss/statistical-test-methods-to-detect-trends-in-time-series-data-b361a0ec530b) (artículo) | Pruebas como Mann-Kendall y Sen | Base del motor estadístico, más la corrección por autocorrelación y FDR que agregamos | C1 |
+| [**Guía de significancia estadística**](https://www.statsig.com/perspectives/a-comprehensive-guide-to-statistical-significance) (artículo) | Valores p, α, potencia y comparaciones múltiples | Diseño de la prueba de detectabilidad ("años para decidir") y del control de falsos positivos | C1 (Sello) |
+| [**SWOT**](https://www.asc-csa.gc.ca/eng/satellites/swot/) (NASA/CNES con CSA y UKSA) | Altura, área y **cambio de almacenamiento** de lagos y embalses; el producto LakeSP versión D lo estima directamente ([PO.DAAC](https://podaac.jpl.nasa.gov/dataset/SWOT_L2_HR_LakeSP_obs_D)) | **Cambio de volumen observado** de las represas desde 2023 para calibrar el gemelo y la curva área-volumen sin batimetría; también ayuda a medir la colmatación de Aguada Blanca *(verificar que cada represa está en la base de lagos de SWOT)* | C2, C4 |
+| [**RADARSAT Constellation Mission**](https://donnees-data.asc-csa.gc.ca/en/dataset/rcm) (CSA) | Radar que ve de día, de noche y con nubes; los productos de archivo de 16 m o más gruesos son abiertos ([CSA](https://data.asc-csa.gc.ca/en/dataset/64927856-8o0t-5u1o-987izna480aa45)) | Espejo de agua **bajo nubes** en la temporada de lluvias, justo cuando Landsat no ve. Se evalúa la cobertura sobre Arequipa en el catálogo; si no hay, se usa Sentinel-1 (Copernicus) con el mismo método | C4, C3 |
+| [**Tutorial de radar en Python**](https://github.com/asc-csa/Synthetic_Aperture_Radar_Tutorial) (CSA) | Cargar y graficar imágenes de radar con GDAL, cartopy y QGIS | Punto de partida para procesar y mostrar el radar; agregamos el umbral de agua (el tutorial no clasifica) | C4 |
+| [**Monitoreo de ecosistemas desde el espacio**](https://www.asc-csa.gc.ca/eng/satellites/everyday-lives/monitoring-and-protecting-our-ecosystems-from-space.asp) (CSA) | Usos de satélites para humedales, agua y suelos | Marco para presentar el monitoreo de bofedales | C5, pitch |
+| **Geo.ca** (Canadá) | Datos geoespaciales de Canadá | **No aplica** a Arequipa; útil solo si se replica en una cuenca canadiense | Escala global |
+
+> *NASA no respalda a entidades que no son del Gobierno de EE. UU.; en los sitios no gubernamentales de EE. UU. se respetan sus condiciones de uso de datos, como pide la página del reto.*
+
+### 7.2 Recursos de la guía de la sede
+
+Todo lo demás se obtiene con los recursos de la guía de la sede ([lista completa](docs/recursos-guia.md)). Para el hackathon, el orden importa: **las solicitudes de AppEEARS tardan horas en procesarse, así que se envían en la primera hora.**
 
 | Recurso de la guía | Qué sacamos | Uso | Tiempo para tener el dato |
 |---|---|---|---|
@@ -309,8 +359,10 @@ Todo se obtiene con los recursos que da la guía de la sede ([lista completa](do
 ```mermaid
 flowchart TB
     subgraph Fuentes["Recursos de la guía"]
-        G[Giovanni] & PW[NASA POWER] & AP[AppEEARS] & ED[Earthdata Search<br/>IMERG · ICESat-2 · SWOT · HLS] & EE[EarthExplorer<br/>Landsat] & CP[Copernicus<br/>Sentinel-2]
-        LOC[AUTODEMA · ANA · SENAMHI · NOAA CPC]
+        G[Giovanni] & HT[Hydrology Time Series<br/>data rods] & AP[AppEEARS] & PW[NASA POWER]
+        ED[Earthdata / PO.DAAC<br/>IMERG · SWOT · ICESat-2 · HLS] & EE[EarthExplorer<br/>Landsat] & CSA[CSA<br/>RCM radar] & CP[Copernicus<br/>Sentinel-1/2]
+        CDO[NOAA Climate Data Online<br/>estación Arequipa] & KN[KNMI Climate Explorer<br/>Niño3.4 · CMIP6]
+        LOC[AUTODEMA · ANA · SENAMHI]
     end
     subgraph Nucleo["Núcleo Python · paquete terraverdict"]
         V[Contratos de datos] --> T[Tendencias + Sello]
@@ -324,7 +376,7 @@ flowchart TB
         W[Web 3D: React + MapLibre + deck.gl<br/>gemelo en TypeScript]
         API[FastAPI] & MCP[Servidor MCP]
     end
-    G & PW & AP & ED & EE & CP & LOC --> V
+    G & HT & AP & PW & ED & EE & CSA & CP & CDO & KN & LOC --> V
     X --> S --> W & API & MCP
 ```
 
@@ -343,6 +395,8 @@ flowchart TB
 | Qué se valida | Cómo | Criterio |
 |---|---|---|
 | Series del pipeline | Comparar con las series de **Giovanni** para el mismo producto y área | Diferencia dentro de la tolerancia preregistrada |
+| Lluvia y temperatura satelitales | Comparar con la estación de Arequipa (Climate Data Online) | Mismo signo de tendencia o explicación documentada |
+| Volumen | Cambio de almacenamiento de **SWOT** frente a los reportes de AUTODEMA | Error dentro de la tolerancia preregistrada |
 | Represas | Espejo de agua Landsat frente a los volúmenes publicados por AUTODEMA (por ejemplo, 39 % en nov. 2023 y 60 % en feb. 2025) | Relación monótona y estable |
 | Gemelo | KGE en el periodo de validación 2016–2025; prueba de años secos frente a años húmedos | Supera el umbral preregistrado |
 | Atribución | Experimento sintético: se siembra una causa conocida y se comprueba que el método la recupera | Recuperación dentro del rango |
@@ -360,7 +414,7 @@ flowchart TB
 
 | Bloque | A · Datos | B · Ciencia | C · Web 3D | D · MCP, historia y pitch |
 |---|---|---|---|---|
-| **Hora 0–1** | **Enviar solicitudes de AppEEARS** (NDVI, LST, nieve, SMAP, NASADEM); bajar Landsat de Aguada Blanca y El Frayle | Preregistro (parámetros y umbrales) con hash | Escena MapLibre con NASADEM | Recopilar los datos reales (sección 1) en un JSON de eventos |
+| **Hora 0–1** | **Enviar solicitudes de AppEEARS** (NDVI, LST, nieve, SMAP, NASADEM); bajar SWOT LakeSP de las represas, la estación de Arequipa (CDO), Niño3.4 y CMIP6 (KNMI) y Landsat de Aguada Blanca y El Frayle | Preregistro (parámetros y umbrales) con hash | Escena MapLibre con NASADEM | Recopilar los datos reales (sección 1) en un JSON de eventos |
 | **Día 1 mañana** | Giovanni (IMERG) y POWER (T2M) por subcuenca | Tendencias + Sello de Confianza: cielo y calor | Ríos animados | Esqueleto del servidor MCP |
 | **Día 1 tarde** | Espejo de agua de Aguada Blanca 1984–hoy | Tendencias de esponja y represas; colmatación | Máquina del tiempo | `estado_cadena`, `colmatacion` |
 | **Día 1 noche** | Bofedales y drenaje (NASADEM) | Gemelo GR2M de El Frayle; calibración y validación | Panel de veredictos | `priorizar_merese` |
@@ -525,6 +579,7 @@ python -m terraverdict.servicios.mcp
 
 - **Tendencias:** Sen (1968) · Hamed y Rao (1998) · Santer et al. (2000) · Benjamini y Hochberg (1995) · Wilks (2016) · Weatherhead et al. (1998) · Correll, Moritz y Heer (2018), VSUP.
 - **Hidrología:** Mouelhi et al. (2006), GR2M · Oudin et al. (2005) · Day (1985), ESP · Gupta et al. (2009), KGE · Klemeš (1986) · Hersbach (2000), CRPS · Renard et al. (1997), RUSLE.
+- **Recursos del reto:** Acker, J. G., McMahon, E., Shen, S., Hearty, T. y Casey, N. (2009). Time-series analysis of remotely-sensed SeaWiFS chlorophyll in river-influenced coastal regions. *EARSeL eProceedings* 8(2), 114–139 · Data Rods for Hydrology ([Earthdata](https://www.earthdata.nasa.gov/learn/articles/data-rods-for-hydrology)) · SWOT LakeSP ([PO.DAAC](https://podaac.jpl.nasa.gov/dataset/SWOT_L2_HR_LakeSP_obs_D)) · KNMI Climate Explorer ([series](https://climexp.knmi.nl/help/systemseries.shtml)) · RCM ([CSA](https://data.asc-csa.gc.ca/en/dataset/64927856-8o0t-5u1o-987izna480aa45)).
 - **Teledetección:** Pekel et al. (2016), agua superficial global · Roy et al. (2016), continuidad Landsat 7–8 · Nechad et al. (2010), turbidez desde reflectancia.
 - **Región:** Jonaitis et al. (2021) · Sulca, Vuille y Dong · Manz et al. (2017) · Aybar et al. (2020), PISCOp · Ley 30215 (MERESE).
 
