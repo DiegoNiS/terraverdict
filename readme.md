@@ -62,6 +62,7 @@ Las tres caras tienen **una raíz común**: el estado de la **cabecera de cuenca
 2. 🔬 **Explica** qué parte del cambio se debe a menos lluvia, a más calor o a la cuenca, con un gemelo hidrológico calibrado desde el espacio.
 3. 📈 **Anticipa** la probabilidad de terminar la temporada con poca agua y **alerta** cuando una lluvia intensa amenaza con enturbiar el río.
 4. 🎯 **Prioriza** dónde invertir el fondo de conservación que **ya existe**: el MERESE de SEDAPAR, con **US$ 1,5 millones comprometidos para 2024–2026** ([Forest Trends](https://www.forest-trends.org/wp-content/uploads/2024/10/Brochure-Merese-COP-14.01.25.pdf)).
+5. 🤖 **Conversa y digitaliza con IA verificada:** un modelo de lenguaje vía API (Claude) responde preguntas en lenguaje simple y convierte los reportes PDF de AUTODEMA en datos. **Nunca calcula ni inventa un número:** cada cifra que escribe se verifica contra los resultados del sistema antes de mostrarse.
 
 > **La frase para el jurado:** *"Arequipa no tiene un problema de agua: tiene un problema de cuenca. TerraVerdict lo mide desde el espacio, lo explica y dice dónde actuar, y sirve para cualquier ciudad que vive de una montaña."*
 
@@ -73,6 +74,7 @@ Las tres caras tienen **una raíz común**: el estado de la **cabecera de cuenca
 | Variables elegidas al azar | Variables elegidas por el **recorrido del agua**, que es lo que el reto marca como lo difícil |
 | "Es significativo" | "Es robusto", "es frágil por El Niño" o "**faltan X años para saberlo**" |
 | Usar uno o dos recursos | Usar **todos los recursos oficiales del reto** con un papel concreto (sección 7.1), incluido **SWOT** para medir el agua de las represas |
+| IA que inventa cifras, o ninguna IA | IA que **digitaliza datos reales** y **conversa sin poder inventar números**: cada cifra se verifica contra el núcleo |
 | Impacto hipotético | **Tres crisis documentadas** (2023, 2024, 2025) y un **fondo real** (US$ 1,5 M de MERESE) que necesita prioridades |
 | Se queda en Arequipa | Un archivo de configuración por ciudad; el patrón se repite de Lima a Katmandú |
 
@@ -84,7 +86,7 @@ Las tres caras tienen **una raíz común**: el estado de la **cabecera de cuenca
 4. **2:30** · **Turbidez:** se repite la lluvia de IMERG de febrero de 2025 sobre las quebradas y el semáforo se pone en rojo horas antes del corte.
 5. **3:15** · **Aguada Blanca:** la máquina del tiempo muestra 1985 frente a hoy, junto con el cambio de almacenamiento medido por SWOT.
 6. **3:45** · **MERESE:** se mueve el presupuesto y el mapa elige los bofedales y laderas que más agua y menos sedimento aportan por cada sol.
-7. **4:30** · **MCP:** en vivo, alguien pregunta a un asistente de IA *"¿es verdad que en Arequipa llueve menos?"* y la respuesta cita su expediente.
+7. **4:30** · **IA verificada:** en vivo, alguien pregunta *"¿es verdad que en Arequipa llueve menos?"*; el asistente consulta las herramientas y responde citando su expediente. Después intentamos engañarlo para que invente una cifra y el verificador lo bloquea.
 8. **4:50** · *"Arequipa no tiene un problema de agua: tiene un problema de cuenca. Y esto sirve para cualquier ciudad que vive de una montaña."*
 
 ---
@@ -290,6 +292,30 @@ El mismo núcleo se ofrece por tres puertas:
 
 **Regla de oro:** la IA conversa, pero no calcula. Cada número viene de una herramienta y cita su expediente reproducible.
 
+### C7 · IA generativa con garantías: ¿es factible? Sí, con reglas
+
+**Respuesta corta:** es factible y suma mucho, pero **solo donde no pone en riesgo la confiabilidad**. Un modelo de lenguaje es excelente para leer, extraer, explicar y redactar; no es una fuente confiable de números ni un sustituto de la estadística o de la hidrología. Por eso TerraVerdict lo usa como **traductor y digitalizador**, nunca como calculadora ni como juez.
+
+| ¿Dónde se usa IA? | ¿Por qué ahí? | Garantía |
+|---|---|---|
+| ✅ **Asistente "Pregúntale al río"**: preguntas en lenguaje natural sobre la cuenca | Acerca los resultados a periodistas, estudiantes y autoridades | El modelo solo puede responder llamando a las herramientas del núcleo (las mismas del servidor MCP); un **verificador numérico** rechaza la respuesta si contiene una cifra que no esté en los resultados de esas herramientas |
+| ✅ **Digitalizador de reportes de AUTODEMA** (PDF → tabla) | Convierte años de reportes hídricos públicos en **datos de verdad terrestre** para validar el gemelo, que hoy no existen como serie | Esquema estricto (salidas estructuradas), **dos extracciones independientes** que deben coincidir, reglas de consistencia (la suma de las represas igual al total, volúmenes dentro de su capacidad, continuidad entre días) y una cola de revisión humana para lo que no cuadre |
+| ✅ **Verificador de afirmaciones de prensa** | Convierte una nota ("la lluvia bajó 40 %") en una afirmación estructurada (variable, lugar, periodo, sentido) | El veredicto lo da el **motor estadístico**, no la IA; el usuario confirma la afirmación extraída y la explicación cita la frase exacta de la nota (citas de documentos) |
+| ✅ **Borrador del boletín mensual** para SEDAPAR, AUTODEMA y la ANA | Ahorra horas de redacción técnica | Las cifras se insertan desde los expedientes con una plantilla; la IA solo redacta el texto alrededor; nada se envía sin aprobación humana |
+| ❌ Tendencias, atribución, pronóstico, alertas y priorización | Deben ser reproducibles, auditables y calibrados | Estadística y modelos físicos con preregistro y validación: la IA no interviene |
+
+**Siete reglas que hacen la IA confiable** (detalle en el [diseño técnico](docs/diseno-tecnico.md#7b-ia-generativa-con-garantías)):
+
+1. **La IA no produce números:** todos vienen de herramientas, y un verificador lo comprueba en cada respuesta.
+2. **Respuestas ancladas:** cada afirmación cita su expediente o la página del PDF de donde salió.
+3. **Puede abstenerse:** si las herramientas dicen "no decidible" o no hay datos, la respuesta dice eso y no rellena.
+4. **Salidas estructuradas y validadas** con esquemas estrictos; las que no cumplen se rechazan.
+5. **Defensa contra instrucciones ocultas:** los PDF y las noticias se tratan como datos, no como órdenes; las herramientas son de solo lectura.
+6. **Evaluación continua:** un conjunto de preguntas de referencia con respuestas conocidas, pruebas de intentos de manipulación y métricas publicadas. Una versión que empeore no se despliega.
+7. **Sin dependencia:** si la API falla, todo el sistema sigue funcionando sin el asistente.
+
+**Modelo:** Claude Opus 5.5 (`claude-opus-5-5`) vía la API de Anthropic, con razonamiento adaptativo, salidas estructuradas, lectura nativa de PDF, citas de documentos, caché de prompts y procesamiento por lotes para el archivo histórico. **Costo:** del orden de centavos de dólar por pregunta, y de decenas de dólares para digitalizar todo el archivo con procesamiento por lotes (estimación a validar con las primeras mediciones).
+
 ---
 
 ## 7. Datos: recursos oficiales del reto y de la guía
@@ -404,6 +430,8 @@ flowchart TB
 | Alerta de turbidez | ¿Habría alertado antes de los cortes de marzo de 2024 y febrero de 2025? ¿Cuántas falsas alarmas tendría? | Aciertos, falsas alarmas y anticipación en horas |
 | Colmatación | Pérdida de espejo de agua de Aguada Blanca frente a la pérdida reportada (de 43 a ~22 hm³) | Mismo sentido y orden de magnitud |
 | Bofedales | Cambio de área 2000–2024 frente al −8,7 % de la tesis de la UCSM y muestras fotointerpretadas | Coherencia y matriz de confusión |
+| Asistente de IA | Conjunto de referencia de preguntas con respuesta conocida, preguntas sin respuesta y textos con instrucciones ocultas | 100 % de cifras verificadas (lo impone el verificador); abstención correcta; 0 instrucciones ocultas obedecidas |
+| Digitalizador de PDF | Comparar con reportes transcritos a mano | Exactitud por campo publicada; todo desacuerdo pasa a revisión humana |
 | Uso real | Presentación a SEDAPAR, SERNANP o AUTODEMA | Carta de interés o uso en una decisión |
 
 ---
@@ -418,10 +446,10 @@ flowchart TB
 | **Día 1 mañana** | Giovanni (IMERG) y POWER (T2M) por subcuenca | Tendencias + Sello de Confianza: cielo y calor | Ríos animados | Esqueleto del servidor MCP |
 | **Día 1 tarde** | Espejo de agua de Aguada Blanca 1984–hoy | Tendencias de esponja y represas; colmatación | Máquina del tiempo | `estado_cadena`, `colmatacion` |
 | **Día 1 noche** | Bofedales y drenaje (NASADEM) | Gemelo GR2M de El Frayle; calibración y validación | Panel de veredictos | `priorizar_merese` |
-| **Día 2 mañana** | IMERG Early de los días de los cortes | Atribución; umbral de turbidez; ESP | Escenarios en el navegador | `atribuir_cambio`, `alerta_turbidez`; demo conversacional |
+| **Día 2 mañana** | IMERG Early de los días de los cortes | Atribución; umbral de turbidez; ESP | Escenarios en el navegador | `atribuir_cambio`, `alerta_turbidez`; asistente de IA con verificador numérico; digitalizar los reportes de AUTODEMA disponibles |
 | **Día 2 tarde** | Congelar datos | Expedientes finales | Historia guiada y versión móvil | Video, ensayo y README con resultados reales |
 
-**Si el tiempo aprieta, se recorta en este orden:** ESP → escenarios en el navegador → alerta de turbidez (queda la línea de tiempo de los eventos con la lluvia de IMERG) → gemelo (queda la atribución estadística por regresión). **Nunca se recortan** el Sello de Confianza, el "no decidible" ni la honestidad sobre lo que no se pudo validar.
+**Si el tiempo aprieta, se recorta en este orden:** boletín con IA → ESP → escenarios en el navegador → alerta de turbidez (queda la línea de tiempo de los eventos con la lluvia de IMERG) → gemelo (queda la atribución estadística por regresión). **Nunca se recortan** el Sello de Confianza, el "no decidible" ni la honestidad sobre lo que no se pudo validar.
 
 ---
 
@@ -524,6 +552,7 @@ terraverdict/
 │   ├── extraccion/ (giovanni, power, appeears, earthdata, landsat)
 │   ├── tendencias/  sello/  hidro/  atribucion/  pronostico/
 │   ├── turbidez/  colmatacion/  erosion/  merese/  expedientes/
+│   ├── ia/  (asistente, verificador numérico, digitalizador PDF, evaluaciones)
 │   └── servicios/{api.py, mcp.py}
 ├── web/                       # React + TS + MapLibre + deck.gl
 ├── notebooks/
