@@ -1,0 +1,371 @@
+# TerraVerdict · Diseño técnico
+
+> Documento para el equipo y para el jurado técnico. Define **qué** se construye, **cómo** y **por qué**, con las ecuaciones, los contratos de datos, las decisiones de arquitectura y la estrategia de pruebas. Lo marcado como *por confirmar* no se usa en conclusiones hasta verificarlo.
+
+## Contenido
+
+1. [Alcance y no objetivos](#1-alcance-y-no-objetivos)
+2. [Modelo de dominio](#2-modelo-de-dominio)
+3. [Decisiones de arquitectura (ADR)](#3-decisiones-de-arquitectura-adr)
+4. [Pipeline y contratos de datos](#4-pipeline-y-contratos-de-datos)
+5. [Métodos y ecuaciones](#5-métodos-y-ecuaciones)
+6. [El Expediente](#6-el-expediente)
+7. [API y servidor MCP](#7-api-y-servidor-mcp)
+8. [Frontend](#8-frontend)
+9. [Estrategia de pruebas](#9-estrategia-de-pruebas)
+10. [Operación](#10-operación)
+11. [Seguridad y privacidad](#11-seguridad-y-privacidad)
+12. [Registro de riesgos](#12-registro-de-riesgos)
+13. [Hoja de ruta después del hackathon](#13-hoja-de-ruta-después-del-hackathon)
+
+---
+
+## 1. Alcance y no objetivos
+
+**Objetivos**
+
+- O1. Series por tramo de la cadena del agua, con tendencia, significancia y Sello de Confianza (cubre el reto).
+- O2. Gemelo hidrológico mensual de cada represa piloto, calibrado y validado con observaciones satelitales.
+- O3. Atribución del cambio del aporte entre lluvia, temperatura y residuo, con incertidumbre.
+- O4. Pronóstico probabilístico de llenado (ESP) con evaluación retrospectiva y regla de publicación.
+- O5. Priorización de bofedales con restricción de presupuesto.
+- O6. Escenarios interactivos en el navegador.
+- O7. Acceso por web 3D, API REST y servidor MCP, desde el mismo núcleo.
+
+**No objetivos (explícitos)**
+
+- No es un sistema de operación de represas ni recomienda descargas: entrega riesgo e información; AUTODEMA decide.
+- No es un pronóstico del tiempo ni de crecidas a corto plazo.
+- No modela la calidad del agua ni el agua subterránea.
+- No usa modelos de lenguaje para calcular ni para decidir.
+
+---
+
+## 2. Modelo de dominio
+
+```mermaid
+classDiagram
+    class Cuenca { id; nombre; poligono; trasvases }
+    class Subcuenca { id; poligono; area_km2; elev_media_m; represa_id }
+    class Represa { id; capacidad_hm3*; curva_area_volumen*; poligono_max }
+    class Tramo { id: cielo|calor|esponja|perdida|represas|uso|nieve }
+    class Serie { variable; producto; version; unidad; frecuencia; valores }
+    class Tendencia { sen; ic90; p_mk; sello; veredicto; anios_para_decidir }
+    class Gemelo { modelo: GR2M; parametros_ensamble; kge_cal; kge_val }
+    class Expediente { id; tipo; resultado; procedencia; hash_preregistro; commit }
+    class Bofedal { id; poligono; area_ha; tendencia_ndvi; conectividad }
+    Cuenca "1" --> "*" Subcuenca
+    Subcuenca "1" --> "0..1" Represa
+    Cuenca "1" --> "*" Bofedal
+    Tramo "1" --> "*" Serie
+    Serie "1" --> "1" Tendencia
+    Subcuenca "1" --> "1" Gemelo
+    Tendencia ..> Expediente
+    Gemelo ..> Expediente
+```
+*\* por confirmar con AUTODEMA.*
+
+Todo resultado publicable es un **Expediente** inmutable, identificado por un hash de sus entradas.
+
+---
+
+## 3. Decisiones de arquitectura (ADR)
+
+| ADR | Decisión | Alternativas consideradas | Motivo |
+|---|---|---|---|
+| **ADR-1** | Modelo **GR2M mensual y agregado** por subcuenca | HBV, SWAT, VIC, modelos distribuidos | Con pocos datos, 2 parámetros son identificables; uno distribuido sobreajusta. Es rápido para ensambles de miles de corridas y portable al navegador |
+| **ADR-2** | **Precalcular y servir estático**; solo los escenarios corren en vivo | Backend con cómputo bajo demanda | Costo cero, latencia mínima, sin estado en el servidor; el modelo tarda microsegundos por corrida |
+| **ADR-3** | Implementación de referencia en **Python** y port en **TypeScript** con **pruebas de paridad** | Solo API para los escenarios | Interactividad instantánea y funcionamiento sin conexión; la paridad evita que las dos versiones diverjan |
+| **ADR-4** | Extracción con **Google Earth Engine** y `earthaccess` como complemento | Descarga masiva con `earthaccess` y AppEEARS | Las reducciones zonales en el servidor ahorran horas; `earthaccess` cubre lo que GEE no tiene (IMERG Late) |
+| **ADR-5** | **LLM solo en la interfaz**, vía MCP | Agente que calcula | Reproducibilidad y cero alucinación numérica: el LLM solo cita expedientes |
+| **ADR-6** | **No publicar** un pronóstico sin habilidad (CRPSS ≤ 0) | Publicar siempre con una advertencia | Una advertencia no compensa una mala decisión; "no sabemos" es una salida válida |
+| **ADR-7** | **NASADEM** para terreno y drenaje | Copernicus DEM | Datos NASA en el núcleo; resolución equivalente para la cuenca |
+| **ADR-8** | **Preregistro** de parámetros y umbrales con hash | Ajustar después de ver los resultados | Evita ajustar el análisis para obtener la respuesta deseada; es auditable |
+| **ADR-9** | Formatos abiertos: **Parquet, GeoJSON, COG y catálogo STAC** | Base de datos | Hosting estático, interoperable con QGIS y Python |
+
+---
+
+## 4. Pipeline y contratos de datos
+
+### 4.1 Etapas
+
+```mermaid
+flowchart LR
+    E[extraer] --> V[validar contrato] --> P[preprocesar] --> T[tendencias + sello]
+    P --> H[forzantes del gemelo] --> C[calibrar] --> A[atribuir] & F[pronosticar]
+    P --> B[bofedales] --> O[optimizar]
+    T & A & F & O --> X[expedientes] --> S[publicar STAC]
+```
+
+- Cada etapa es una función pura `entradas → salidas`, con caché por **hash de entradas + versión del código + hash del preregistro**. Una segunda corrida sin cambios no recalcula nada.
+- La orquestación es una CLI (`python -m terraverdict.pipeline`) con un DAG simple. Si crece, se migra a Prefect o Snakemake sin cambiar las etapas.
+
+### 4.2 Contrato de una serie (Parquet)
+
+| Campo | Tipo | Regla |
+|---|---|---|
+| `fecha` | date (primer día del mes) | Única, continua; los huecos se marcan explícitamente |
+| `valor` | float64 | Unidad SI declarada; sin centinelas (−9999 → nulo) |
+| `unidad` | str | Del vocabulario controlado (`mm/mes`, `K`, `km2`, `1`) |
+| `producto`, `version`, `doi` | str | Obligatorios |
+| `frac_valida` | float [0, 1] | Fracción de píxeles válidos; el mes se descarta si es menor que el umbral preregistrado |
+| `familia` | str | Familia de procedencia, para la prueba de independencia |
+
+Los contratos se validan con esquemas (`pandera` o `pydantic`); **un contrato roto detiene el pipeline**, nunca pasa en silencio.
+
+### 4.3 Preprocesamiento
+
+- Agregación zonal ponderada por área de píxel sobre cada subcuenca (incluidos los trasvases).
+- **Temperatura corregida por altitud:** `T_sub = T_MERRA2 + Γ·(z_MERRA2 − z_sub)`, con `Γ = 6.5 °C/km` (preregistrado; sensibilidad con 5.5 y 7.5) y `z_sub` de NASADEM.
+- **Armonización de Landsat:** coeficientes de Roy et al. (2016) para llevar ETM+ y TM a OLI; máscara de nubes con `QA_PIXEL`; las bandas faltantes de Landsat 7 se tratan como nulos y no se interpolan.
+- **Superficie de agua:** MNDWI con umbral de Otsu por escena dentro del polígono máximo de la represa; los meses con menos del 80 % del polígono libre de nubes se descartan. Antes de 2022 se usa JRC GSW, y en el periodo de solape se compara con el método propio.
+
+---
+
+## 5. Métodos y ecuaciones
+
+### 5.1 Tendencias y Sello de Confianza
+
+- Anomalías: `x'(t) = x(t) − clim_m(t)`, con climatología mensual del periodo base preregistrado.
+- Pendiente de Theil-Sen con IC al 90 %; Mann-Kendall con corrección de Hamed-Rao; t-test con `n_eff = n(1−r₁)/(1+r₁)`; FDR de Benjamini-Hochberg en mapas con `α_FDR = 2α` (Wilks, 2016).
+- **Ventanas:** todas las ventanas `[i, j]` con `j − i ≥ L_min`; se aprueba si la fracción con el mismo signo es ≥ `u_ventanas`.
+- **ENSO:** `x'(t) = a + b·t + Σ_{k=0..3} c_k·ONI(t−k) + ε`; se aprueba si `b` mantiene signo y significancia. Sensibilidad con RONI.
+- **Sensor:** escalón en las transiciones documentadas (IMERG 2014-06; Landsat 5→7, 7→8, 8→9); se compara por AIC y por el cambio de `b`; Pettitt como sensibilidad.
+- **Independencia:** se aprueba si al menos dos **familias** de procedencia coinciden en el signo.
+- **Detectabilidad:** `n* ≈ [(3.3·σ_N/|ω₀|)·√((1+φ)/(1−φ))]^(2/3)` (Weatherhead et al., 1998) y bootstrap por bloques; reporta "faltan ~X años".
+- **Veredicto:** 🟢 robusta · 🟡 frágil (nombra la prueba que falla) · ⚪ no decidible · 🔵 sin tendencia detectable.
+
+### 5.2 Evapotranspiración potencial (Oudin et al., 2005)
+
+```
+PE [mm/día] = 1000 · Re / (λ·ρ) · (T + 5) / 100     si T + 5 > 0
+PE = 0                                              en otro caso
+```
+`Re`: radiación extraterrestre (MJ m⁻² día⁻¹, función de la latitud y el día del año); `λ = 2.45 MJ/kg`; `ρ = 1000 kg/m³`; `T`: temperatura media diaria corregida por altitud. Se suma por mes.
+
+### 5.3 GR2M (Mouelhi et al., 2006; formulación de airGR)
+
+Estados: `S` (reservorio de producción, capacidad `X1` mm) y `R` (reservorio de tránsito). Para cada mes, con lluvia `P` y evapotranspiración potencial `E`:
+
+```
+φ  = tanh(P / X1)
+S1 = (S + X1·φ) / (1 + φ·S/X1)
+P1 = P + S − S1
+ψ  = tanh(E / X1)
+S2 = S1·(1 − ψ) / (1 + ψ·(1 − S1/X1))
+S  = S2 / (1 + (S2/X1)³)^(1/3)
+P2 = S2 − S
+R1 = R + P1 + P2
+R2 = X2 · R1
+Q  = R2² / (R2 + 60)
+R  = R2 − Q
+```
+
+Aporte a la represa: `I(t) [hm³] = Q(t) [mm] · A_sub [km²] · 10⁻³`, más los trasvases medidos cuando estén disponibles. Se usa un periodo de calentamiento de 24 meses.
+
+> La implementación se verifica contra `airGR::RunModel_GR2M` con forzantes sintéticos (prueba de referencia).
+
+### 5.4 Balance del embalse
+
+```
+V(t+1) = V(t) + I(t) + P(t)·A(V) − E_ow(t)·A(V) − O(t) − D(t)
+```
+
+- `A(V)`: superficie en función del volumen (curva área-volumen).
+- `E_ow`: evaporación de agua libre (Penman con radiación, temperatura, humedad y viento de MERRA-2; Oudin como sensibilidad).
+- `O(t)`: descargas medidas por AUTODEMA. Si no se consiguen, se estiman como residuo `O = V(t) − V(t+1) + I + ...`; en ese caso la atribución se hace sobre `I`, no sobre `V`, y se declara.
+- `D(t)`: vertimientos cuando `V > V_max`.
+
+**¿Cómo obtener la curva área-volumen sin batimetría?** Se fusionan tres fuentes:
+
+1. **Área:** Landsat y JRC GSW (1984–hoy).
+2. **Altura del agua:** ICESat-2 ATL13 (desde 2018) y SWOT LakeSP (desde 2023), ambos de NASA. *(Verificar la cobertura de cada represa.)*
+3. **Hipsometría** de NASADEM por encima del nivel del agua que tenía el embalse en febrero de 2000.
+
+Los pares (área, altura) definen `A(h)`, y `ΔV = ∫ A(h) dh` da los **cambios de volumen** que necesita el balance. Si AUTODEMA entrega volúmenes, se usan para validar la curva.
+
+### 5.5 Calibración e incertidumbre
+
+- **Parámetros:** `X1 ∈ [1, 2000] mm`, `X2 ∈ [0.2, 1]`, más un factor multiplicativo de lluvia `β ∈ [0.7, 1.3]` que absorbe el sesgo de IMERG en la montaña.
+- **Muestreo:** 10 000 conjuntos por hipercubo latino. Se retienen como "aceptables" los que superan `KGE ≥ KGE_min` (preregistrado) sobre `ΔV` observado.
+- **Forzantes:** se repite con la lluvia de IMERG y con la de MERRA-2.
+- **Validación:** calibración 2001–2015 y validación 2016–2025; además, la prueba de calibrar en años secos y validar en años húmedos (Klemeš, 1986).
+- **Regla:** si el KGE de validación es menor que el umbral, el gemelo **no alimenta** la atribución ni el pronóstico de esa represa, y la app solo muestra observaciones.
+
+### 5.6 Atribución contrafactual
+
+Para cada conjunto aceptable `θ` y cada forzante `f`:
+
+1. `I_real`: corrida con `P` y `T` reales.
+2. `I_sinP`: corrida con `P` sin su tendencia (se resta la pendiente de Sen y se conserva la variabilidad).
+3. `I_sinT`: corrida con `T` sin su tendencia.
+4. `I_sinPT`: corrida sin ninguna de las dos tendencias.
+
+```
+Δ_total = sen(I_real)
+Δ_P     = sen(I_real) − sen(I_sinP)
+Δ_T     = sen(I_real) − sen(I_sinT)
+Δ_PT    = Δ_total − sen(I_sinPT) − Δ_P − Δ_T    (interacción)
+Residuo = sen(I_obs) − sen(I_real)              (lo que el clima no explica)
+```
+
+`I_obs` es el aporte inferido del balance con `ΔV` observado y las descargas. El reporte da **rangos** (percentiles 5–95 sobre `θ × f`), nunca un solo número.
+
+**Validación del método:** con datos sintéticos (generados por el propio gemelo) se siembra una tendencia conocida solo en `T`, solo en `P` o en el residuo, y se comprueba que el método la recupera dentro del rango reportado.
+
+### 5.7 Pronóstico ESP condicionado por ENSO
+
+1. **Estado inicial:** el gemelo corre hasta el mes actual con IMERG Late Run. El volumen se ajusta a la última observación de Landsat o HLS con un nudging proporcional a la incertidumbre de la observación (un filtro de Kalman por ensambles queda para la Fase 1).
+2. **Trazas:** para cada año histórico `y ∈ {2001, …, 2025}`, se simula de hoy a fin de abril con los forzantes de ese año.
+3. **Pesos:** `w_y ∝ exp(−(ONI_y − ONI_pron)² / (2h²))`, donde `ONI_y` es el ONI de dic-ene-feb del año `y`, `ONI_pron` es el pronóstico de NOAA CPC y `h` está preregistrado. Con `h → ∞` se obtiene el ESP clásico.
+4. **Salida:** cuantiles ponderados P10, P50 y P90 del volumen final y `P(V_fin < umbral)`.
+
+**Evaluación retrospectiva:** para cada año se pronostica sin usar ese año (dejar uno fuera) desde los meses de inicio nov, dic, ene y feb.
+
+```
+CRPS(F, y) = E_F|X − y| − ½ E_F|X − X'|          (versión ponderada para ensambles)
+CRPSS = 1 − CRPS_ESP / CRPS_climatología
+```
+
+El IC del CRPSS se obtiene por bootstrap sobre los años. Además se presenta un diagrama de confiabilidad de `P(V_fin < umbral)`. **Regla de publicación (ADR-6):** el pronóstico se muestra solo si el límite inferior del IC al 90 % del CRPSS es mayor que 0 para ese mes de inicio.
+
+### 5.8 Bofedales
+
+- **Candidatos:** mediana del NDVI de jun–sep ≥ `u_ndvi` y pendiente de NASADEM ≤ `u_pend` dentro de la cuenca; se agrupan en polígonos y se descartan los menores de `a_min` hectáreas.
+- **Validación:** muestra estratificada fotointerpretada en imágenes de alta resolución; se publica la matriz de confusión.
+- **Tendencia:** serie anual del NDVI de época seca 1985–2025 armonizado; pendiente de Sen y Sello de Confianza (con escalones de sensor en las transiciones de Landsat).
+- **Conectividad:** dirección de flujo D8 y acumulación con `pysheds` sobre NASADEM; `c_i = 1` si el bofedal drena hacia una represa del sistema, ponderado por la fracción de la subcuenca que representa.
+- **Beneficio:** `b_i = area_i · max(0, −sen_i) · c_i · r_i`, con `r_i ∈ {1, 0.5, 0}` según el veredicto (robusta, frágil o no decidible).
+- **Optimización:** mochila 0-1: maximizar `Σ b_i·x_i` sujeto a `Σ costo_ha·area_i·x_i ≤ presupuesto`. Se resuelve por programación dinámica o con OR-Tools; con cientos de bofedales tarda milisegundos.
+
+### 5.9 Escenarios
+
+Se perturban los forzantes del periodo base y se corren todos los parámetros aceptables:
+
+- Temperatura: `T + ΔT` → nueva `PE` por Oudin y nueva `E_ow`.
+- Lluvia: `P · (1 + ΔP)`.
+- Evaporación del embalse: `E_ow · (1 − η)`.
+- Regla de descargas alternativa.
+
+Salida: la distribución del volumen mensual frente a la línea base. El escenario de bofedales se marca **exploratorio**: se representa como un aumento del parámetro `X1` en un rango tomado de la literatura y la interfaz advierte que es una aproximación.
+
+---
+
+## 6. El Expediente
+
+```json
+{
+  "id": "TV-CHILI-ATR-001",
+  "tipo": "atribucion",
+  "objeto": { "cuenca": "chili_regulado", "represa": "el_frayle" },
+  "periodo": { "desde": "2001-01", "hasta": "2025-12" },
+  "resultado": {
+    "delta_total_hm3_decada": { "p05": null, "p50": null, "p95": null },
+    "fraccion_temperatura": { "p05": null, "p50": null, "p95": null },
+    "fraccion_lluvia": { "p05": null, "p50": null, "p95": null },
+    "residuo": { "p05": null, "p50": null, "p95": null },
+    "veredicto": "no_decidible",
+    "anios_para_decidir": null
+  },
+  "calidad": { "kge_cal": null, "kge_val": null, "n_parametros_aceptables": null },
+  "procedencia": {
+    "productos": [{ "id": "GPM_3IMERGM", "version": "07", "doi": "..." }],
+    "preregistro_sha256": "...",
+    "codigo_commit": "...",
+    "generado": "2026-11-15T00:00:00Z"
+  }
+}
+```
+
+Se valida con un esquema JSON versionado (`schema_version`). La web, la API y el servidor MCP usan el mismo esquema.
+
+---
+
+## 7. API y servidor MCP
+
+| Endpoint REST | Herramienta MCP | Fuente |
+|---|---|---|
+| `GET /cuencas/{id}/cadena` | `estado_cadena` | Precalculado |
+| `GET /represas/{id}/atribucion` | `atribuir_cambio` | Precalculado |
+| `GET /represas/{id}/pronostico?umbral=` | `pronostico_temporada` | Precalculado; el umbral se aplica sobre las trazas guardadas |
+| `POST /represas/{id}/escenario` | `simular_escenario` | En vivo (milisegundos) |
+| `POST /cuencas/{id}/bofedales/priorizar` | `priorizar_bofedales` | En vivo (milisegundos) |
+| `POST /verificar` | `verificar_afirmacion` | Precalculado |
+| `GET /expedientes/{id}` | `expediente` | Estático |
+
+- **Implementación:** FastAPI y el SDK oficial de MCP para Python, sobre el mismo paquete `terraverdict`. Las dos son capas finas sin lógica propia.
+- **Entradas validadas** con modelos tipados y rangos (`ΔT ∈ [−1, 4]`, `ΔP ∈ [−0.5, 0.5]`, presupuesto ≥ 0).
+- **Respuestas:** siempre incluyen `expediente_id` y la frase de incertidumbre lista para mostrar.
+- **Recursos MCP:** `cuenca://chili_regulado/config`, `expediente://{id}`, `glosario://{termino}`.
+- **Prompt MCP:** `explicar_para_publico(expediente_id, nivel)` produce una explicación en lenguaje simple anclada al expediente.
+
+---
+
+## 8. Frontend
+
+- **Stack:** React + TypeScript + Vite; MapLibre GL JS v5 (terreno 3D con NASADEM); deck.gl con `MapboxOverlay` (`TripsLayer` para el flujo, `GeoJsonLayer` para represas y bofedales); Observable Plot para las series.
+- **Gemelo en el navegador:** GR2M + balance + Oudin en TypeScript dentro de un Web Worker; el escenario se recalcula en cada movimiento de un control.
+- **Datos:** JSON y Parquet estáticos, terreno en teselas, imágenes de la máquina del tiempo como PNG precalculados.
+- **Presupuestos de rendimiento:** primera carga < 3 MB sin terreno; escenario < 50 ms; 60 fps en un portátil común; modo ligero 2D en celulares de gama baja.
+- **Comunicación de incertidumbre:** paletas VSUP, bandas P10–P90, frases en formato de frecuencias ("X de cada 10 temporadas parecidas") y el "no decidible" con el mismo peso visual que un resultado.
+
+---
+
+## 9. Estrategia de pruebas
+
+| Tipo | Qué se prueba | Herramienta |
+|---|---|---|
+| Unidad | Sen, Mann-Kendall, FDR, Oudin, GR2M, balance, mochila | `pytest` |
+| Referencia | GR2M frente a airGR; Mann-Kendall frente a `pymannkendall`; superficie de agua frente a JRC en el periodo de solape | Pruebas con datos guardados |
+| Propiedades | Conservación de masa (`ΔV = entradas − salidas`), no negatividad, monotonía de `A(V)`, invariancia del CRPS | `hypothesis` |
+| Paridad | Python y TypeScript dan lo mismo con 1000 forzantes aleatorios (tolerancia 1e-9) | Pruebas cruzadas en CI |
+| Estadística | Calibración del veredicto "Robusta" (Monte Carlo con AR(1) + ENSO); recuperación de la atribución sintética | Notebooks reproducibles en CI |
+| Contratos | Esquemas de series y expedientes | `pandera`, JSON Schema |
+| Extremo a extremo | La web carga, el escenario responde y el MCP devuelve un expediente válido | Playwright y cliente MCP de prueba |
+
+CI con GitHub Actions: lint, tipos (`mypy`, `tsc`), pruebas y validación de contratos en cada PR.
+
+---
+
+## 10. Operación
+
+- **Actualización mensual programada** (GitHub Actions): extrae el mes nuevo, valida contratos, recalcula y publica. Las salidas están versionadas por fecha y commit.
+- **Durante la temporada de lluvias:** actualización semanal del estado inicial del ESP con IMERG Late Run y la última escena Landsat o HLS sin nubes.
+- **Monitoreo:** cada corrida escribe un manifiesto (entradas, hashes, duración, meses descartados por nubes). Una alerta salta si un contrato falla o si la fracción válida cae bajo el umbral.
+- **Hosting:** sitio estático gratuito; la API y el MCP en un contenedor pequeño, opcional porque el núcleo funciona sin ellos.
+- **Costo:** US$ 0 en datos y hosting estático; GEE con uso no comercial.
+
+---
+
+## 11. Seguridad y privacidad
+
+- Los servicios son de **solo lectura**: no se ejecuta código del usuario ni consultas arbitrarias.
+- Los parámetros se validan por rango; hay límite de tasa en los endpoints en vivo.
+- No se recogen datos personales.
+- Las credenciales de GEE y Earthdata viven como secretos de CI y nunca en el repositorio.
+- Las respuestas del servidor MCP son datos, no instrucciones: un cliente no puede inyectar texto que cambie el cálculo.
+
+---
+
+## 12. Registro de riesgos
+
+| # | Riesgo | Prob. | Impacto | Mitigación | Señal de alerta |
+|---|---|---|---|---|---|
+| R1 | No conseguir volúmenes ni descargas de AUTODEMA | Alta | Alto | Curva área-volumen con ICESat-2, SWOT y NASADEM; atribución sobre el aporte | Sin datos al final del día 1 |
+| R2 | Nubes en la temporada de lluvias que dejan sin superficie de agua | Alta | Medio | Combinar Landsat, HLS y Sentinel-2 vía HLS; descartar meses con poca cobertura | Fracción válida < 50 % |
+| R3 | Sesgo de IMERG en la montaña | Alta | Medio | Factor `β` en la calibración; dos familias de lluvia; validación con PISCOp | `β` en el borde de su rango |
+| R4 | El gemelo no valida (KGE bajo) | Media | Alto | Regla de no usarlo; mostrar solo observaciones y tendencias | KGE de validación < umbral |
+| R5 | ESP sin habilidad | Media | Medio | Regla de no publicar (ADR-6) | CRPSS ≤ 0 |
+| R6 | Confundir operación con clima | Media | Alto | Atribución sobre el aporte; residuo declarado | Residuo dominante |
+| R7 | Tiempo insuficiente en el hackathon | Alta | Medio | Orden de recorte preacordado (README, sección 11) | Retraso de 3 h sobre el plan |
+| R8 | Cobertura de ICESat-2 o SWOT insuficiente en la represa piloto | Media | Medio | Hipsometría de NASADEM; elegir la represa piloto según los datos | Sin pasadas útiles |
+
+---
+
+## 13. Hoja de ruta después del hackathon
+
+| Fase | Plazo | Alcance |
+|---|---|---|
+| **1** | 1–3 meses | Todas las represas del sistema; filtro de Kalman por ensambles para asimilar superficie y altura; validación con datos de AUTODEMA; tramo Uso completo |
+| **2** | 3–6 meses | Piloto con un usuario real (MERESE o la jefatura de la Reserva) y medición de una decisión tomada con la herramienta; prueba con estudiantes de la UNSA; artículo científico |
+| **3** | 6–12 meses | Otras ciudades andinas (La Paz, Quito, Santiago, Mendoza); API pública; biblioteca de casos abierta |
