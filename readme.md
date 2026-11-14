@@ -2,14 +2,14 @@
 
 # 🛰️ TerraVerdict
 
-### *El gemelo digital del agua de Arequipa*
-**Explica a dónde se va el agua, pronostica cuánta habrá y dice dónde actuar primero. Todo con datos de NASA, un modelo hidrológico calibrado desde el espacio y una medida honesta de cuánto confiar en cada respuesta.**
+### *Arequipa se queda sin agua por falta… y por exceso*
+**Un sistema de inteligencia hídrica con datos de NASA que detecta las tendencias de la cuenca del Chili, explica por qué cambia el agua, anticipa la escasez y la turbidez, y dice dónde invertir para proteger la fuente. Empieza en Arequipa y sirve para cualquier ciudad que vive del agua de una montaña.**
 
 [![NASA Space Apps 2026](https://img.shields.io/badge/NASA%20Space%20Apps-2026-0B3D91)](https://www.spaceappschallenge.org/2026/challenges/earth-system-trend-detective/)
 [![Reto](https://img.shields.io/badge/Reto-Be%20An%20Earth%20System%20Trend%20Detective!-0E9F92)](https://www.spaceappschallenge.org/2026/challenges/earth-system-trend-detective/)
 [![Sede](https://img.shields.io/badge/Sede-Arequipa%2C%20Per%C3%BA-C8102E)](#)
-[![Datos](https://img.shields.io/badge/Datos-IMERG%20%C2%B7%20MODIS%20%C2%B7%20Landsat%20%C2%B7%20MERRA--2%20%C2%B7%20NASADEM-5B6B7F)](#9-datos)
-[![MCP](https://img.shields.io/badge/MCP-servidor%20abierto-7B3FE4)](#7-api-y-servidor-mcp)
+[![Datos](https://img.shields.io/badge/Datos-Giovanni%20%C2%B7%20POWER%20%C2%B7%20AppEEARS%20%C2%B7%20Earthdata%20%C2%B7%20Landsat-5B6B7F)](#7-datos-recursos-oficiales-de-la-guía)
+[![MCP](https://img.shields.io/badge/MCP-servidor%20abierto-7B3FE4)](#6-componentes-de-la-solución)
 [![Diseño técnico](https://img.shields.io/badge/Docs-dise%C3%B1o%20t%C3%A9cnico-333)](docs/diseno-tecnico.md)
 
 </div>
@@ -18,432 +18,462 @@
 
 ## Índice
 
-1. [Resumen en 30 segundos](#1-resumen-en-30-segundos)
-2. [El problema y las decisiones que cambia](#2-el-problema-y-las-decisiones-que-cambia)
-3. [De la idea base a un sistema de decisión](#3-de-la-idea-base-a-un-sistema-de-decisión)
-4. [Cómo funciona: seis motores](#4-cómo-funciona-seis-motores)
-5. [Las tres preguntas que responde](#5-las-tres-preguntas-que-responde)
-6. [Experiencia: Arequipa en 3D](#6-experiencia-arequipa-en-3d)
-7. [API y servidor MCP](#7-api-y-servidor-mcp)
-8. [Arquitectura](#8-arquitectura)
-9. [Datos](#9-datos)
-10. [Evaluación: cómo sabemos que funciona](#10-evaluación-cómo-sabemos-que-funciona)
+**Parte I · Planteamiento del problema**
+1. [Descripción de la realidad problemática](#1-descripción-de-la-realidad-problemática)
+2. [Árbol del problema](#2-árbol-del-problema)
+3. [Formulación del problema](#3-formulación-del-problema)
+4. [Justificación](#4-justificación)
+5. [Objetivos](#5-objetivos)
+
+**Parte II · Planteamiento de la solución**
+
+6. [Componentes de la solución](#6-componentes-de-la-solución)
+7. [Datos: recursos oficiales de la guía](#7-datos-recursos-oficiales-de-la-guía)
+8. [Experiencia: Arequipa en 3D](#8-experiencia-arequipa-en-3d)
+9. [Arquitectura](#9-arquitectura)
+10. [Validación e indicadores](#10-validación-e-indicadores)
 11. [Plan para las 48 horas](#11-plan-para-las-48-horas)
-12. [Escala global](#12-escala-global)
-13. [Limitaciones y riesgos](#13-limitaciones-y-riesgos)
+
+**Parte III · Impacto y escala**
+
+12. [Usuarios y decisiones que cambia](#12-usuarios-y-decisiones-que-cambia)
+13. [Escala global](#13-escala-global)
 14. [Cómo cubre el reto y los criterios](#14-cómo-cubre-el-reto-y-los-criterios)
-15. [Repositorio y ejecución](#15-repositorio-y-ejecución)
-16. [Equipo](#16-equipo)
-17. [Referencias y licencias](#17-referencias-y-licencias)
+15. [Limitaciones y riesgos](#15-limitaciones-y-riesgos)
+16. [Repositorio, equipo y referencias](#16-repositorio-equipo-y-referencias)
 
-📐 **El diseño técnico completo (ecuaciones, contratos de datos, decisiones de arquitectura, pruebas y riesgos) está en [`docs/diseno-tecnico.md`](docs/diseno-tecnico.md).**
+📐 Ecuaciones, decisiones de arquitectura, contratos de datos y pruebas: [`docs/diseno-tecnico.md`](docs/diseno-tecnico.md) · Guía de recursos de la sede: [`docs/recursos-guia.md`](docs/recursos-guia.md)
 
 ---
 
-## 1. Resumen en 30 segundos
+## Resumen en 30 segundos
 
-Arequipa es una ciudad del desierto que vive del agua que cae en el altiplano. Los **bofedales** la retienen, las **represas** del sistema regulado del Chili la guardan y la ciudad, el campo y la industria la usan. Cada año se repiten tres preguntas que hoy se responden con pocos datos y mucha discusión:
+Arequipa (Perú) es una ciudad del desierto que depende de **siete represas** en la cabecera del río Chili. En los últimos tres años vivió **las dos caras de la misma crisis**:
 
-| Pregunta | Qué entrega TerraVerdict | Cómo |
+- 🏜️ **Por falta:** en noviembre de 2023 las represas guardaban **159 de 409 hm³**, cerca del 39 % ([La República](https://larepublica.pe/sociedad/2023/11/07/arequipa-represas-del-sur-tienen-bajo-nivel-de-almacenamiento-de-agua-lrsd-444311)), y el Gobierno declaró **70 distritos en emergencia** por déficit hídrico ([Andina](https://andina.pe/agencia/noticia-deficit-hidrico-estos-son-los-70-distritos-arequipa-declarados-emergencia-961301.aspx)).
+- 🌊 **Por exceso:** en febrero de 2025 las lluvias llevaron la turbidez del Chili a **5 000 NTU**, y SEDAPAR detuvo sus dos plantas de La Tomilla, dejando sin agua a **más del 70 % de la población** ([El Búho](https://elbuho.pe/2025/02/lluvias-en-arequipa-sedapar-detiene-produccion-de-agua-potable-y-pide-a-poblacion-almacenarla/), [Andina](https://andina.pe/agencia/noticia-arequipa-sin-agua-potable-corte-del-servicio-afecta-a-mas-del-70-de-poblacion-977336.aspx)).
+- 🪨 **Y por desgaste:** la represa Aguada Blanca, diseñada para **43 hm³**, hoy puede contener **unos 22 hm³** por los sedimentos ([El Búho](https://elbuho.pe/2024/03/arequipa-proyectan-nueva-represa-ante-altos-niveles-de-colmatacion-en-aguada-blanca/)).
+
+Las tres caras tienen **una raíz común**: el estado de la **cabecera de cuenca** (lluvia, calor, bofedales, suelo y sedimento) y un clima que cambia. Las tres **se ven desde el espacio**, pero hoy nadie las mira juntas.
+
+**TerraVerdict** junta los datos abiertos de NASA en un solo sistema:
+
+1. 🕵️ **Detecta tendencias** en cada tramo del agua, del cielo a la represa, con pruebas que evitan conclusiones falsas. Es el núcleo del reto.
+2. 🔬 **Explica** qué parte del cambio se debe a menos lluvia, a más calor o a la cuenca, con un gemelo hidrológico calibrado desde el espacio.
+3. 📈 **Anticipa** la probabilidad de terminar la temporada con poca agua y **alerta** cuando una lluvia intensa amenaza con enturbiar el río.
+4. 🎯 **Prioriza** dónde invertir el fondo de conservación que **ya existe**: el MERESE de SEDAPAR, con **US$ 1,5 millones comprometidos para 2024–2026** ([Forest Trends](https://www.forest-trends.org/wp-content/uploads/2024/10/Brochure-Merese-COP-14.01.25.pdf)).
+
+> **La frase para el jurado:** *"Arequipa no tiene un problema de agua: tiene un problema de cuenca. TerraVerdict lo mide desde el espacio, lo explica y dice dónde actuar, y sirve para cualquier ciudad que vive de una montaña."*
+
+---
+
+# Parte I · Planteamiento del problema
+
+## 1. Descripción de la realidad problemática
+
+### 1.1 El sistema que abastece a Arequipa
+
+| Elemento | Dato real | Fuente |
 |---|---|---|
-| **¿A dónde se va el agua?** | Qué parte del cambio en el agua que llega a las represas se debe a **menos lluvia**, a **más calor** o a **otras causas** (uso, operación, degradación de la cuenca) | **Atribución contrafactual** con un modelo hidrológico calibrado con satélites |
-| **¿Cuánta agua tendremos?** | La **probabilidad** de que las represas terminen la temporada de lluvias por debajo de un umbral | **Pronóstico por ensambles (ESP)** condicionado por El Niño y La Niña, validado contra 20 años de pronósticos retrospectivos |
-| **¿Dónde actuar primero?** | Un **ranking de bofedales** para invertir el fondo de conservación de la cuenca, y **simulaciones** de "qué pasaría si" | Landsat desde 1984, red de drenaje desde NASADEM y optimización por presupuesto |
+| Represas del sistema regulado del Chili | 7: El Frayle, El Pañe, Pillones, Bamputañe, Chalhuanca, Aguada Blanca y Dique de los Españoles | [AUTODEMA, reporte hídrico](https://www.autodema.gob.pe/wp-content/uploads/2024/03/REPORTE-HIDRICO.pdf) |
+| Capacidad útil máxima del sistema | 404,01 hm³ (otras fuentes citan entre 393 y 410 hm³) | [El Búho, feb. 2025](https://elbuho.pe/2025/02/arequipa-represas-de-la-cuenca-del-chili-regulado-registran-60-de-volumen-util/) |
+| Volumen útil por represa (marzo de 2024) | El Frayle 130,87 · El Pañe 90,03 · Pillones 67,64 · Bamputañe 26,49 · Chalhuanca 26,30 · Aguada Blanca 22,72 · Dique de los Españoles 9,26 hm³ (total 373,30) | [AUTODEMA](https://www.autodema.gob.pe/wp-content/uploads/2024/03/REPORTE-HIDRICO.pdf) |
+| Cabecera | Reserva Nacional de Salinas y Aguada Blanca: 366 936 ha en Arequipa y Moquegua; incluye el sitio Ramsar "Bofedales y Laguna de Salinas" (17 657 ha) | [Ramsar RIS](https://rsisd10.unepgrid.ch/RISapp/files/RISrep/PE1317RIS.pdf) |
+| Potabilización | Plantas La Tomilla y Miguel de la Cuba Ibarra; su paralización afectaría al 90 % de la población | [El Búho](https://elbuho.pe/?p=369832) |
 
-Cada número sale con su **Sello de Confianza**: pruebas de robustez y, cuando los datos no alcanzan, **cuántos años faltan para saberlo**. Si el pronóstico no le gana a la climatología, el sistema **no lo publica** y lo dice.
+### 1.2 Cara 1: escasez (2023–2024)
 
-> **La frase para el jurado:** *"Las herramientas de hoy te muestran si una variable cambia. TerraVerdict te dice por qué cambia el agua de tu ciudad, cuánta tendrás y dónde invertir, y te avisa cuándo todavía no se sabe."*
+- Noviembre de 2023: el sistema Chili guardaba **159 hm³ de 409 hm³** útiles, en un contexto de déficit asociado a El Niño ([La República](https://larepublica.pe/sociedad/2023/11/07/arequipa-represas-del-sur-tienen-bajo-nivel-de-almacenamiento-de-agua-lrsd-444311)).
+- El **Decreto Supremo 122-2023-PCM** declaró en emergencia a **70 distritos** de Arequipa por peligro inminente de déficit hídrico ([Andina](https://andina.pe/agencia/noticia-deficit-hidrico-estos-son-los-70-distritos-arequipa-declarados-emergencia-961301.aspx)).
+- El Plan de Aprovechamiento de Disponibilidades Hídricas 2023–2024 garantizó solo el **95 %** de las demandas y restringió el 5 % del uso agrícola ([Energiminas / ANA](https://energiminas.com/?p=10890)).
+- Las autoridades discrepan en público: el Ministerio de Agricultura negó la escasez que SENAMHI advertía ([Proactivo](https://proactivo.com.pe/?p=33591)).
 
----
+### 1.3 Cara 2: exceso y turbidez (2024–2025)
 
-## 2. El problema y las decisiones que cambia
+- Marzo de 2024: SEDAPAR paralizó sus dos plantas por **huaicos y el rebose de la represa Aguada Blanca** ([La República](https://larepublica.pe/sociedad/2024/03/07/corte-de-agua-en-arequipa-sedapar-paraliza-produccion-en-sus-2-plantas-por-huaicos-y-rebose-de-represa-aguada-blanca-lrsd-432572)).
+- Febrero de 2025: la turbidez en la captación llegó a **5 000 NTU**; SEDAPAR detuvo la producción y pidió a la población almacenar agua ([El Búho](https://elbuho.pe/2025/02/lluvias-en-arequipa-sedapar-detiene-produccion-de-agua-potable-y-pide-a-poblacion-almacenarla/)). El corte afectó a **más del 70 %** de la población ([Andina](https://andina.pe/agencia/noticia-arequipa-sin-agua-potable-corte-del-servicio-afecta-a-mas-del-70-de-poblacion-977336.aspx)); otra cobertura habla de **más del 80 %** de la ciudad ([Gestión](https://gestion.pe/peru/arequipa-otra-vez-sin-agua-mas-del-80-de-la-ciudad-sin-el-servicio-sedapar-fuertes-lluvias-corte-de-agua-noticia/)).
+- Hubo un segundo episodio el mismo mes, con el caudal del Chili en **50 m³/s** ([El Búho](https://elbuho.pe/?p=375688)).
 
-### 2.1 El sistema real
+### 1.4 Cara 3: la fuente se degrada
 
-- Arequipa depende del río Chili, regulado por un sistema de represas de cabecera (El Pañe, Dique de los Españoles, Pillones, Chalhuanca, Bamputañe, El Frayle y Aguada Blanca) operado por **AUTODEMA**, con **trasvases** desde cabeceras vecinas. *(Lista, capacidades y trasvases por confirmar con AUTODEMA.)*
-- Gran parte de la cabecera está en la **Reserva Nacional de Salinas y Aguada Blanca**, donde los bofedales sostienen el agua en la época seca.
-- La Ley 30215 (MERESE) permite que una parte de la tarifa de agua financie la conservación de la cabecera. *(Monto y estado del MERESE de SEDAPAR por confirmar con SUNASS y SEDAPAR.)*
+- **Colmatación:** Aguada Blanca pasó de **43 hm³** de diseño a **unos 22 hm³** ([El Búho, 2024](https://elbuho.pe/2024/03/arequipa-proyectan-nueva-represa-ante-altos-niveles-de-colmatacion-en-aguada-blanca/)). AUTODEMA reconoce que en más de 50 años **no se han hecho estudios** de cuánta colmatación hay, y el dragado se estima en **US$ 50–100 millones** (misma fuente). En 2019 se advertía que el embalse perdería el **75 % de su volumen útil en 17 años** si el proceso seguía ([La República](https://larepublica.pe/sociedad/2019/12/08/fuentes-de-agua-para-ciudades-del-sur-estan-en-peligro-lrsd/)).
+- **Bofedales:** una tesis de la UCSM encontró una **reducción del 8,7 % del área de bofedales** de la reserva entre 2000 y 2024 ([UCSM](https://repositorio.ucsm.edu.pe/bitstreams/0eb69d01-db27-4e5d-a82c-95b19afaad40/download)). El sobrepastoreo es una de las presiones reconocidas ([Ramsar RIS](https://rsisd10.unepgrid.ch/RISapp/files/RISrep/PE1317RIS.pdf)).
 
-### 2.2 Por qué hoy no se puede responder bien
+### 1.5 Hay dinero para actuar, pero no hay un mapa de dónde
 
-- Faltan datos: la falta de información hidrométrica y meteorológica es el mayor problema para evaluar los recursos hídricos de Quilca-Vítor-Chili ([estudio](https://core.ac.uk/download/482041099.pdf)). Solo tres estaciones de caudal de Arequipa tienen más de 20 años de registro y siguen activas ([Purdue / Arequipa Nexus](https://ag.purdue.edu/hydrology/swm/es/documents/datos_descarga_rios.pdf)).
-- Las variables se miran por separado. Una represa que baja puede deberse a menos lluvia, a más evaporación, a una cuenca degradada o a más consumo, y cada causa pide una acción distinta.
-- Las tendencias cortas engañan: dependen del año de inicio, de la secuencia de El Niño y La Niña o de un cambio de satélite ([climate.gov](https://climate.gov/comment/2959), [Jonaitis et al., 2021](https://geo.appstate.edu/sites/default/files/jonaitis_etal_2021_ijoc.pdf)).
-- El debate es público y sin árbitro: en una temporada, el Ministerio de Agricultura negó la escasez que SENAMHI advertía para Arequipa ([Proactivo](https://proactivo.com.pe/?p=33591)).
+- Desde octubre de 2021, SEDAPAR incluye en su tarifa el **MERESE** (Ley 30215), aprobado por SUNASS. Ejecutó **unos US$ 454 mil entre 2022 y 2023** (qochas, zanjas de infiltración, canales) y firmó en 2024 un acuerdo por **US$ 1,5 millones para 2024–2026** en la cuenca Quilca-Chili y la reserva ([Forest Trends](https://www.forest-trends.org/wp-content/uploads/2024/10/Brochure-Merese-COP-14.01.25.pdf)). SEDAPAR destina al MERESE el **1,2 % de su facturación** ([Trome](https://trome.com/actualidad/cop16-peru-presento-logros-para-conservar-agua-biodiversidad-reserva-salinas-arequipa-imp-noticia/)).
+- La pregunta práctica es **qué hectárea primero, y por qué**. Hoy esa decisión no usa los **40 años de archivo Landsat** ni los 25 años de MODIS e IMERG, gratuitos y disponibles.
 
-### 2.3 Decisiones concretas que mejora
+### 1.6 Faltan datos en tierra y sobran datos en el espacio
 
-| Actor | Decisión | Momento | Producto de TerraVerdict |
-|---|---|---|---|
-| **AUTODEMA** | Prepararse para la temporada; comunicar el riesgo | Nov–abr | Pronóstico probabilístico de llenado por represa |
-| **ANA y Junta de usuarios del Chili** | Plan de distribución de la época seca | Fin de la temporada de lluvias | Probabilidad de déficit y escenarios |
-| **SEDAPAR / SUNASS (MERESE)** | Dónde invertir en conservación | Plan anual | Ranking de bofedales por beneficio hidrológico y presupuesto |
-| **Gobierno Regional** | Narrativa y política: ¿falta lluvia o se pierde el agua? | Planificación | Atribución del cambio con su incertidumbre |
-| **SENAMHI** | Dónde medir | Diseño de red | Mapa de "no decidible" con años para decidir |
-| **Prensa, colegios y universidades** | Entender y verificar | Siempre | Historia 3D, verificador de afirmaciones y asistente vía MCP |
-
----
-
-## 3. De la idea base a un sistema de decisión
-
-| | Idea base | TerraVerdict ahora |
-|---|---|---|
-| **Pregunta** | ¿Esta tendencia es confiable? | ¿Por qué cambia el agua, cuánta habrá y dónde actuar? |
-| **Unidad de análisis** | Una variable, celda por celda | El **sistema** completo: cuenca, bofedales, represas y uso |
-| **Ciencia** | Estadística de tendencias | Tendencias **+ modelo hidrológico + atribución + pronóstico + optimización** |
-| **Papel de la confiabilidad** | Era el producto | Es el **control de calidad** de cada producto |
-| **Salida** | Un veredicto | Probabilidades, porcentajes atribuidos, rankings y escenarios para decidir |
-| **Validación** | Pruebas estadísticas | Calibración y validación con represas reales, pronósticos retrospectivos y métricas de habilidad |
-| **Integración** | Web | Web 3D + API + **servidor MCP** + QGIS y hojas de cálculo |
+- La falta de información hidrométrica y meteorológica es el mayor problema para evaluar los recursos hídricos de Quilca-Vítor-Chili ([estudio](https://core.ac.uk/download/482041099.pdf)).
+- Solo tres estaciones de caudal de Arequipa tienen más de 20 años de registro y siguen activas ([Purdue / Arequipa Nexus](https://ag.purdue.edu/hydrology/swm/es/documents/datos_descarga_rios.pdf)).
+- En cambio, NASA ofrece gratis y con cobertura global la lluvia (GPM IMERG, desde 2000), la temperatura (MERRA-2, desde 1980), la vegetación, la nieve y la evapotranspiración (MODIS, desde 2000), el agua superficial y la cobertura del suelo (Landsat, desde 1984) y la altura del agua (ICESat-2, SWOT).
+- **El problema de fondo, que es justo el del reto:** una tendencia de 20 o 25 años puede ser ruido. Depende del año de inicio, de la secuencia de El Niño y La Niña o de un cambio de satélite ([climate.gov](https://climate.gov/comment/2959), [Jonaitis et al., 2021](https://geo.appstate.edu/sites/default/files/jonaitis_etal_2021_ijoc.pdf), [NCAR/GDEX](https://gdex.ucar.edu/datasets/d731000/)). Invertir según una tendencia falsa cuesta dinero y tiempo.
 
 ---
 
-## 4. Cómo funciona: seis motores
-
-```mermaid
-flowchart LR
-    subgraph Observar
-        A[1 · Cadena del agua\nseries satelitales por tramo\n+ Sello de Confianza]
-    end
-    subgraph Modelar
-        B[2 · Gemelo hidrológico\nGR2M + embalse\ncalibrado con Landsat]
-    end
-    subgraph Decidir
-        C[3 · Atribución\n¿lluvia, calor u otra causa?]
-        D[4 · Pronóstico ESP\nprobabilidad de llenado]
-        E[5 · Priorización\nbofedales por presupuesto]
-        F[6 · Escenarios\nqué pasaría si]
-    end
-    A --> B
-    B --> C & D & F
-    A --> E
-    C & D & E & F --> G[Expedientes\nreproducibles]
-    G --> W[Web 3D] & M[API / MCP]
-```
-
-### Motor 1 · La Cadena del Agua (observar)
-
-Cada tramo del recorrido tiene una pregunta y un dato satelital:
-
-| Tramo | Pregunta | Dato |
-|---|---|---|
-| ☁️ Cielo | ¿Llueve menos en la cabecera? | GPM IMERG V07 |
-| 🌡️ Calor | ¿Se calienta y evapora más? | MODIS LST, MERRA-2 |
-| 🌱 Esponja | ¿Pierden verdor los bofedales en la época seca? | Landsat desde 1984, MODIS NDVI |
-| 💨 Pérdida | ¿Aumenta la evapotranspiración? | MODIS ET (MOD16) |
-| 🏞️ Represas | ¿Se reduce la superficie de agua? | Landsat / JRC Global Surface Water desde 1984 |
-| 🏙️ Uso | ¿Crecen el área regada y la ciudad? | Landsat |
-| ❄️ Nieve | ¿Sube la línea de nieve de los volcanes? *(indicador de calentamiento, no de volumen)* | MODIS nieve |
-
-Cada serie pasa por el **Sello de Confianza** (sección 10.1). Esto cubre exactamente lo que pide el reto: variables, series, tasas de cambio y significancia.
-
-### Motor 2 · El gemelo hidrológico (modelar)
-
-Un modelo hidrológico mensual **GR2M** ([Mouelhi et al., 2006](#17-referencias-y-licencias)) para cada subcuenca que aporta a una represa, acoplado a un **balance del embalse**:
-
-- **Entradas:** lluvia de IMERG y evapotranspiración potencial de Oudin, calculada con la temperatura de MERRA-2 corregida por altitud con NASADEM.
-- **Embalse:** `V(t+1) = V(t) + aporte − evaporación del lago − descargas`. La evaporación usa la superficie de agua medida por Landsat.
-- **Calibración:** contra los cambios de volumen de cada represa, obtenidos al combinar la superficie de agua de Landsat con la altura del agua de **ICESat-2** y **SWOT** y la topografía de NASADEM, sin necesidad de batimetría. Cuando se obtengan, también contra los volúmenes publicados por AUTODEMA.
-- **Incertidumbre:** un ensamble de parámetros "aceptables" y dos fuentes de lluvia (IMERG y MERRA-2), no un solo ajuste.
-
-¿Por qué un modelo simple? Con pocos datos, un modelo de dos parámetros se puede identificar bien; uno distribuido con decenas de parámetros solo memoriza ruido. Además, GR2M es tan liviano que **corre en el navegador**: los escenarios responden al instante cuando el usuario mueve un control.
-
-### Motor 3 · Atribución contrafactual (¿a dónde se va el agua?)
-
-Se corre el gemelo con el clima real y con climas **contrafactuales**: uno sin la tendencia de la lluvia y otro sin la tendencia de la temperatura. La diferencia en la tendencia del aporte simulado reparte el cambio:
-
-> *"Del descenso del aporte a El Frayle desde 2001, entre A % y B % es compatible con el aumento de temperatura, entre C % y D % con el cambio de lluvia, y lo que el clima no explica (E %) apunta a uso, operación o degradación de la cuenca."*
-
-Los rangos salen del ensamble de parámetros y de las dos fuentes de lluvia. Además, si la tendencia observada de la represa no la explica el clima, el residuo se compara con el tramo **Uso** y con el verdor de los bofedales.
-
-### Motor 4 · Pronóstico de temporada (¿cuánta agua tendremos?)
-
-**Ensemble Streamflow Prediction (ESP)**, la técnica operativa clásica de pronóstico de caudales ([Day, 1985](#17-referencias-y-licencias)):
-
-1. Se lleva el gemelo hasta hoy con IMERG Late Run (casi en tiempo real) y se ajusta su estado con la última superficie de agua vista por Landsat o HLS.
-2. Desde ese estado se simula la temporada con el clima de **cada año histórico** (2001–2025).
-3. Cada año se pondera según su parecido con el pronóstico de ENSO de NOAA.
-4. Resultado: la **distribución del volumen a fin de temporada** y la probabilidad de quedar por debajo de un umbral que elija el usuario.
-
-**Regla de publicación:** el pronóstico solo se muestra si en las pruebas retrospectivas supera a la climatología (CRPSS > 0 con intervalo de confianza). Si no, la app dice: *"Para esta represa, hoy no podemos pronosticar mejor que el promedio histórico."*
-
-### Motor 5 · Priorización de bofedales (¿dónde actuar primero?)
-
-1. **Mapeo:** píxeles que siguen verdes en la época seca (NDVI de jun–sep de Landsat), en terreno plano según NASADEM.
-2. **Tendencia 1985–2025** por bofedal, con NDVI armonizado entre los sensores de Landsat y con Sello de Confianza.
-3. **Conectividad hidrológica:** con la red de drenaje derivada de NASADEM, se determina si el bofedal drena hacia una represa del sistema y cuánta área aporta.
-4. **Optimización:** dado un presupuesto y un costo por hectárea que ingresa el usuario, se elige el conjunto de bofedales que **maximiza el beneficio** (área degradada recuperable × conectividad × robustez de la tendencia). Es un problema de mochila que se resuelve en milisegundos.
-
-Salida: mapa, tabla y GeoJSON para QGIS. Es la herramienta que le falta a una oficina de MERESE.
-
-### Motor 6 · Escenarios (qué pasaría si)
-
-Sobre el gemelo calibrado se mueven controles y se ve el efecto en el volumen de las represas:
-
-- Temperatura +0.5 / +1 / +2 °C.
-- Lluvia −10 % / −20 %.
-- Reducir la evaporación del embalse en un X % (coberturas, operación con menos superficie expuesta).
-- Otra regla de descargas.
-
-El escenario de **restauración de bofedales** se muestra como **exploratorio**, con un rango tomado de la literatura, porque GR2M no representa el bofedal de forma explícita. Lo decimos en la misma pantalla.
-
----
-
-## 5. Las tres preguntas que responde
-
-Así se ve cada respuesta. *(Valores ilustrativos de formato: ningún número de este README es un resultado calculado.)*
-
-```
-┌──────────────────────────────────────────────────────────────────┐
-│ EXPEDIENTE TV-CHILI-ATR-001 · Atribución · Represa El Frayle      │
-├──────────────────────────────────────────────────────────────────┤
-│ Cambio del aporte simulado 2001–2025 ....  −X hm³/década [IC 90%] │
-│   explicado por temperatura ............  A–B %                   │
-│   explicado por lluvia .................  C–D %                   │
-│   no explicado por el clima ............  E–F %  → ver Uso, Esponja│
-│ Sello: ventanas ✓  ENSO ✓  sensor ✓  independencia ✗  años: ~X   │
-│ Modelo: GR2M · KGE validación = 0.XX · 200 parámetros · 2 lluvias │
-│ Preregistro sha256:xxxx · datos: DOIs · código: commit xxxx       │
-└──────────────────────────────────────────────────────────────────┘
-```
-
-| Respuesta | Formato para el público |
-|---|---|
-| Atribución | *"El agua se está perdiendo sobre todo por el calor, no porque llueva menos."* o *"Todavía no se puede saber: faltan ~X años."* |
-| Pronóstico | *"En X de cada 10 temporadas parecidas, las represas terminaron abril por debajo del 50 %."* (formato de frecuencias, más fácil de entender que los porcentajes) |
-| Prioridad | *"Con S/ X se pueden recuperar estos 12 bofedales, que alimentan a El Frayle y a Pillones."* |
-
----
-
-## 6. Experiencia: Arequipa en 3D
-
-- **Terreno real** de la cuenca con Chachani, Misti y Pichu Pichu, desde NASADEM (30 m), con MapLibre GL JS v5.
-- **El agua que baja:** partículas que recorren la red de ríos desde las cumbres hasta las represas y la ciudad (`TripsLayer` de deck.gl). La velocidad sigue el aporte simulado del mes y el color sigue el veredicto de cada tramo.
-- **Represas vivas:** la superficie del embalse sube y baja con la línea de tiempo desde 1984. En modo pronóstico se dibujan tres niveles de agua: pesimista (P10), central (P50) y optimista (P90).
-- **Bofedales que respiran:** se apagan o se intensifican según su tendencia, con paletas que suprimen la incertidumbre (VSUP).
-- **Máquina del tiempo:** un deslizador compara imágenes Landsat reales, como El Frayle o la campiña en 1985 frente a hoy.
-- **Panel de escenarios:** controles de temperatura, lluvia y evaporación; el gemelo corre en el navegador y el agua en 3D responde al instante.
-- **Historia guiada:** un recorrido con scroll que vuela del cielo a la nieve, a los bofedales y a la represa, y termina en el veredicto.
-- **Accesible:** español e inglés, colores aptos para daltonismo, celular y un modo ligero sin 3D.
-
----
-
-## 7. API y servidor MCP
-
-El mismo núcleo de dominio se expone por tres puertas: la web, una API REST y un **servidor MCP** ([Model Context Protocol](https://modelcontextprotocol.io)) para asistentes de IA y otras herramientas.
-
-| Herramienta MCP | Qué hace |
-|---|---|
-| `estado_cadena(cuenca)` | Semáforo y sello de cada tramo |
-| `atribuir_cambio(represa, desde, hasta)` | Reparto del cambio entre lluvia, calor y otras causas, con rangos |
-| `pronostico_temporada(represa, umbral)` | Distribución de llenado, probabilidad de déficit y habilidad retrospectiva |
-| `simular_escenario(represa, dT, dP, evap)` | Corre el gemelo con el escenario pedido |
-| `priorizar_bofedales(cuenca, presupuesto, costo_ha)` | Selección óptima en GeoJSON |
-| `verificar_afirmacion(...)` | Respaldada / Contradicha / No decidible, con la causa |
-| `expediente(id)` | JSON reproducible de cualquier resultado |
-
-**Regla de oro:** la IA conversa, pero no calcula. Cada número que da sale de una herramienta y cita su expediente. El servidor es de solo lectura, no ejecuta código arbitrario y valida cada parámetro con esquemas tipados.
-
-**Conexiones:** asistentes de IA compatibles con MCP; QGIS (GeoJSON y COG, y servidores MCP comunitarios de QGIS por evaluar); hojas de cálculo (CSV); Blender (servidor MCP comunitario por evaluar, para el render del video).
-
----
-
-## 8. Arquitectura
+## 2. Árbol del problema
 
 ```mermaid
 flowchart TB
-    subgraph Extracción
-        GEE[Google Earth Engine\nIMERG · MODIS · Landsat · JRC · NASADEM]
-        EA[earthaccess\nMERRA-2 · GLDAS · IMERG Late]
-        EXT[NOAA CPC: ONI / RONI\nAUTODEMA · SENAMHI]
+    P["<b>PROBLEMA CENTRAL</b><br/>Arequipa gestiona su agua sin saber<br/>qué está cambiando en su cuenca, por qué,<br/>ni dónde actuar primero"]
+
+    C1["Causa 1<br/>Pocas estaciones y series cortas"] --> P
+    C2["Causa 2<br/>Variables analizadas por separado<br/>(lluvia, represas, bofedales)"] --> P
+    C3["Causa 3<br/>Tendencias sin control de robustez<br/>(El Niño, ventana, sensor)"] --> P
+    C4["Causa 4<br/>Datos satelitales disponibles,<br/>pero no convertidos en decisiones"] --> P
+
+    P --> E1["Efecto 1 · Escasez<br/>39 % de almacenamiento (2023),<br/>70 distritos en emergencia"]
+    P --> E2["Efecto 2 · Turbidez<br/>plantas paralizadas,<br/>más del 70 % sin agua (2025)"]
+    P --> E3["Efecto 3 · Degradación<br/>Aguada Blanca a ~la mitad,<br/>bofedales −8,7 % (2000–2024)"]
+    P --> E4["Efecto 4 · Inversión a ciegas<br/>US$ 1,5 M de MERESE<br/>sin un mapa de prioridades"]
+```
+
+---
+
+## 3. Formulación del problema
+
+**Pregunta general**
+
+> ¿Cómo convertir los datos abiertos de observación de la Tierra de NASA en información **confiable y accionable** que explique qué cambia en la cuenca que abastece a Arequipa, por qué cambia y dónde intervenir para reducir el riesgo de escasez, turbidez y pérdida de almacenamiento?
+
+**Preguntas específicas**
+
+| # | Pregunta | Componente que la responde |
+|---|---|---|
+| PE1 | ¿Qué variables de la cuenca (lluvia, temperatura, nieve, verdor de bofedales, evapotranspiración y agua embalsada) muestran **tendencias robustas** y cuáles todavía **no se pueden decidir**? | C1 · Detective de tendencias |
+| PE2 | ¿Qué parte del cambio en el agua que llega a las represas se explica por la **lluvia**, por la **temperatura** o por **otras causas**? | C2 · Gemelo y atribución |
+| PE3 | ¿Con qué probabilidad terminará la temporada de lluvias con poca agua, y **cuándo una lluvia intensa amenaza con enturbiar** el río? | C3 · Anticipación |
+| PE4 | ¿Cuánto almacenamiento ha perdido Aguada Blanca y **de dónde viene el sedimento**? | C4 · Monitor de colmatación y erosión |
+| PE5 | ¿**Dónde invertir** el fondo MERESE para obtener más agua y agua más limpia por cada sol? | C5 · Priorizador MERESE |
+
+**Hipótesis de trabajo** *(a contrastar con los datos; no son resultados)*
+
+- H1. La disminución del agua disponible en la temporada seca no se explica solo por la lluvia: el aumento de temperatura y la degradación de la cabecera contribuyen de forma medible.
+- H2. Los cortes por turbidez están asociados a lluvias intensas sobre subcuencas con alta susceptibilidad a la erosión, y esas lluvias se pueden detectar con IMERG con horas de anticipación.
+- H3. La pérdida de capacidad de Aguada Blanca se observa en el archivo Landsat como un avance del delta de sedimentos y una reducción del espejo de agua a nivel máximo.
+
+---
+
+## 4. Justificación
+
+| Dimensión | Por qué importa |
+|---|---|
+| **Social** | El agua potable de la mayoría de la ciudad depende de dos plantas sobre un solo río. Cada corte por turbidez afecta a más del 70 % de la población, y cada año seco recorta el agua del campo. |
+| **Económica** | Hay US$ 1,5 millones de MERESE comprometidos para 2024–2026 y un dragado de Aguada Blanca estimado en US$ 50–100 millones. Una mala priorización cuesta más que la herramienta. |
+| **Ambiental** | Los bofedales son la esponja de la cabecera y están dentro de una reserva nacional y de un sitio Ramsar. |
+| **Científica** | El reto pide distinguir tendencias reales de ruido. En una cuenca andina con pocas estaciones y fuerte influencia de El Niño, esa distinción decide si una inversión tiene sentido. |
+| **Tecnológica** | Todos los datos son abiertos y globales; el sistema es de código abierto y replicable con un archivo de configuración. |
+| **Oportunidad** | Noviembre es el inicio de la temporada de lluvias: es justo cuando Arequipa se pregunta si se llenarán las represas y si se cortará el agua. |
+
+---
+
+## 5. Objetivos
+
+**Objetivo general**
+
+Desarrollar un sistema abierto de inteligencia hídrica que, con datos de observación de la Tierra de NASA, **detecte, explique, anticipe y priorice** los cambios del agua en la cuenca del Chili, con una medida explícita de la confianza en cada resultado, y que sea **replicable en cualquier cuenca de montaña del mundo**.
+
+**Objetivos específicos**
+
+| # | Objetivo | Indicador verificable |
+|---|---|---|
+| OE1 | Detectar y validar tendencias en 7 tramos de la cadena del agua | Tendencia, IC y veredicto (robusta / frágil / no decidible) por tramo, con "años para decidir" |
+| OE2 | Atribuir el cambio del aporte a las represas entre lluvia, temperatura y residuo | Rangos de atribución con un gemelo validado en un periodo independiente |
+| OE3 | Estimar la probabilidad de déficit al cierre de la temporada y detectar lluvias que puedan producir turbidez | Habilidad del pronóstico frente a la climatología (CRPSS) y aciertos frente a los cortes documentados de 2024 y 2025 |
+| OE4 | Cuantificar la pérdida de espejo de agua de Aguada Blanca y mapear las fuentes de sedimento | Serie Landsat 1984–hoy y mapa de susceptibilidad a la erosión |
+| OE5 | Priorizar intervenciones MERESE según beneficio hídrico por presupuesto | Ranking exportable a QGIS para un presupuesto dado |
+| OE6 | Comunicar todo en 3D, en lenguaje simple y por API/MCP | Demo pública, historia guiada y servidor MCP funcionando |
+
+---
+
+# Parte II · Planteamiento de la solución
+
+## 6. Componentes de la solución
+
+```mermaid
+flowchart LR
+    D[(Datos abiertos NASA<br/>Giovanni · POWER · AppEEARS<br/>Earthdata · Landsat)] --> C1
+    C1[C1 · Detective de tendencias<br/>cadena del agua + Sello de Confianza] --> C2[C2 · Gemelo y atribución<br/>¿lluvia, calor o cuenca?]
+    C2 --> C3[C3 · Anticipación<br/>probabilidad de déficit<br/>+ alerta de turbidez]
+    C1 --> C4[C4 · Colmatación y erosión<br/>Aguada Blanca + fuentes de sedimento]
+    C1 & C4 --> C5[C5 · Priorizador MERESE<br/>dónde invertir por cada sol]
+    C2 & C3 & C4 & C5 --> X[Expedientes reproducibles]
+    X --> W[Web 3D] & M[API · MCP · QGIS]
+```
+
+### C1 · Detective de tendencias: la cadena del agua *(núcleo del reto)*
+
+El recorrido del agua define **qué variables mirar**, que es lo que el reto señala como lo más difícil:
+
+| Tramo | Pregunta | Dato NASA | Herramienta de la guía |
+|---|---|---|---|
+| ☁️ Cielo | ¿Llueve menos en la cabecera? ¿Hay más lluvias extremas? | GPM IMERG V07 (mensual y diaria) | **Giovanni** · Earthdata Search |
+| 🌡️ Calor | ¿Sube la temperatura? | MERRA-2 (T2M desde 1981) · MODIS LST | **NASA POWER** · AppEEARS |
+| ❄️ Nieve | ¿Sube la línea de nieve del Chachani, el Misti y el Pichu Pichu? *(indicador de calentamiento, no de volumen)* | MODIS MOD10A1 | **AppEEARS** |
+| 🌱 Esponja | ¿Pierden verdor los bofedales en la época seca? | Landsat 1984–hoy · MODIS NDVI | **EarthExplorer** · AppEEARS |
+| 💧 Suelo | ¿Se seca el suelo? | SMAP (desde 2015) · GLDAS | **SMAP** · Giovanni |
+| 💨 Pérdida | ¿Aumenta la evapotranspiración? | MODIS ET (MOD16) · GLDAS | AppEEARS · Giovanni |
+| 🏞️ Represas | ¿Baja el espejo de agua? | Landsat · HLS · Sentinel-2 | EarthExplorer · Earthdata · **Copernicus** |
+
+**Sello de Confianza.** Cada tendencia pasa cinco pruebas antes de usarse: (1) **ventanas**: ¿depende del año de inicio?; (2) **El Niño**: ¿desaparece al controlar por ONI/RONI?; (3) **sensor**: ¿es un salto del satélite (TRMM→GPM en 2014; Landsat 5→7→8→9)?; (4) **independencia**: ¿la confirman fuentes que no comparten insumos?; (5) **detectabilidad**: ¿cuántos años faltan para decidir? Los métodos son Theil-Sen, Mann-Kendall con corrección por autocorrelación y FDR en mapas, con parámetros preregistrados y su hash SHA-256 publicado.
+
+**Veredictos:** 🟢 robusta · 🟡 frágil (indica qué prueba falla) · ⚪ no decidible (indica cuántos años faltan) · 🔵 sin tendencia detectable.
+
+### C2 · Gemelo hidrológico y atribución: ¿a dónde se va el agua?
+
+- **Gemelo:** modelo mensual GR2M por subcuenca de cada represa, alimentado con lluvia de IMERG y evapotranspiración potencial calculada con la temperatura de POWER/MERRA-2 corregida por altitud (NASADEM). Se acopla a un balance del embalse: `V(t+1) = V(t) + aporte − evaporación − descargas`.
+- **Calibración sin batimetría:** la superficie de agua (Landsat/HLS) se combina con la altura del agua (ICESat-2 ATL13 y SWOT, de NASA) y con la topografía (NASADEM) para obtener los **cambios de volumen**. Se valida con los volúmenes que publica AUTODEMA.
+- **Validación honesta:** se calibra con 2001–2015 y se valida con 2016–2025. Si no pasa, el gemelo no se usa y la app solo muestra observaciones.
+- **Atribución contrafactual:** se corre el gemelo con el clima real y sin la tendencia de la lluvia, o sin la de la temperatura. Resultado: *"del cambio en el aporte a El Frayle, entre A y B % es compatible con el calor, entre C y D % con la lluvia, y E % no lo explica el clima (cuenca, uso, operación)"*.
+
+### C3 · Anticipación: escasez y turbidez
+
+**Probabilidad de déficit (Ensemble Streamflow Prediction).** Desde el estado actual del gemelo, se simula la temporada con el clima de cada año histórico, ponderado según el pronóstico de El Niño de NOAA. El resultado es la probabilidad de terminar abril bajo un umbral, por ejemplo *"en X de cada 10 temporadas parecidas, el sistema terminó bajo el 50 %"*. **Regla de publicación:** si en las pruebas con años pasados no le gana a la climatología, no se muestra.
+
+**Alerta temprana de turbidez.** Los cortes de 2024 y 2025 ocurrieron con lluvias intensas y huaicos.
+
+1. Se acumula la lluvia de **IMERG Early Run** (cada 30 minutos, disponible pocas horas después) sobre las subcuencas que drenan hacia la captación, como las quebradas del Misti y el Chachani y el tramo entre Aguada Blanca y La Tomilla.
+2. Se calibra un **umbral empírico** de lluvia y susceptibilidad a la erosión con los cortes documentados (marzo de 2024 y febrero de 2025). Con turbidez diaria de SEDAPAR, el umbral se volverá estadístico.
+3. **Salida:** *"Riesgo alto de turbidez en las próximas horas: recomendable llenar reservorios y avisar a la población"*.
+
+Se presenta como **prototipo** con pocos eventos, y lo decimos.
+
+### C4 · Colmatación y erosión: la represa que se llena de tierra
+
+- **Espejo de agua a nivel alto:** para cada año desde 1984, Landsat mide el área de agua libre de Aguada Blanca en los meses de embalse máximo. Si la represa se llena de sedimento, el delta avanza, aparece vegetación sobre él y el espejo se reduce. La máquina del tiempo muestra 1985 frente a hoy.
+- **Turbidez satelital:** la reflectancia roja de Landsat, HLS y Sentinel-2 se relaciona con la turbidez del agua. Se usa para seguir las plumas de sedimento en los embalses después de las lluvias.
+- **¿De dónde viene el sedimento?** Un mapa de susceptibilidad a la erosión (RUSLE) combina la erosividad de la lluvia (IMERG), la pendiente (NASADEM) y la cobertura vegetal (Landsat/MODIS).
+
+### C5 · Priorizador MERESE: dónde invertir por cada sol
+
+1. **Bofedales:** se mapean los píxeles que siguen verdes en la época seca (NDVI de jun–sep de Landsat) en terreno plano, y se mide su tendencia desde 1985 con Sello de Confianza.
+2. **Conectividad:** la red de drenaje derivada de NASADEM indica qué bofedales y laderas drenan hacia qué represa o hacia la captación.
+3. **Beneficio:** más agua (bofedales degradados recuperables) + agua más limpia (laderas con alta erosión aguas arriba de Aguada Blanca y de la captación).
+4. **Optimización:** con el presupuesto real (por ejemplo, los US$ 1,5 millones de 2024–2026) y un costo por hectárea, se elige el conjunto de intervenciones que **maximiza el beneficio**.
+5. **Salida:** mapa, tabla y GeoJSON para QGIS, para que SEDAPAR, SERNANP y los ejecutores (como Descosur, que administra la reserva según [Forest Trends](https://www.forest-trends.org/wp-content/uploads/2024/10/Brochure-Merese-COP-14.01.25.pdf)) lo usen en su herramienta de siempre.
+
+### C6 · Acceso abierto: web 3D, API y servidor MCP
+
+El mismo núcleo se ofrece por tres puertas:
+
+- La **web 3D** (sección 8).
+- Una **API REST**.
+- Un **servidor MCP** ([Model Context Protocol](https://modelcontextprotocol.io)) con herramientas como `estado_cadena`, `atribuir_cambio`, `pronostico_temporada`, `alerta_turbidez`, `colmatacion`, `priorizar_merese` y `verificar_afirmacion`. Así, un periodista, un docente o un técnico puede preguntarle a su asistente de IA *"¿es verdad que en Arequipa llueve menos?"* y recibir una respuesta con número, fuente y sello.
+
+**Regla de oro:** la IA conversa, pero no calcula. Cada número viene de una herramienta y cita su expediente reproducible.
+
+---
+
+## 7. Datos: recursos oficiales de la guía
+
+Todo se obtiene con los recursos que da la guía de la sede ([lista completa](docs/recursos-guia.md)). Para el hackathon, el orden importa: **las solicitudes de AppEEARS tardan horas en procesarse, así que se envían en la primera hora.**
+
+| Recurso de la guía | Qué sacamos | Uso | Tiempo para tener el dato |
+|---|---|---|---|
+| **Giovanni** (R01) | Series de área de IMERG, GLDAS y MERRA-2 sobre la cuenca | C1 y validación del pipeline | Minutos, sin programar |
+| **NASA POWER** (R03) | T2M, precipitación y radiación mensual desde 1981, por coordenadas de cada subcuenca | C1 y C2 (forzantes del gemelo) | Minutos (API sin clave) |
+| **AppEEARS** (R03/R04) | MODIS NDVI, LST, ET y nieve; SMAP; HLS; NASADEM sobre el polígono de la cuenca | C1, C4 y C5 | Horas (enviar al inicio) |
+| **SMAP** (R03) | Humedad del suelo desde 2015 | C1 (contraste) | Vía AppEEARS |
+| **Earthdata Search** + cuenta **Earthdata** | IMERG Early/Late/Final, ICESat-2 ATL13, SWOT, HLS | C2, C3 y C4 | Minutos a horas |
+| **EarthExplorer** (USGS) | Landsat 5/7/8/9 Collection 2 desde 1984 | C1, C4 y C5 | Horas (por escenas) |
+| **Worldview** | Imágenes del día de cada corte por turbidez y del estado de las represas | Validación visual y pitch | Minutos |
+| **Copernicus Data Space** (aliado) | Sentinel-2 (10 m) para turbidez y espejo de agua reciente | C4 | Minutos a horas |
+| **FIRMS** (R04) | Quemas en la puna que degradan pastizales y bofedales | C5 (presión adicional) | Minutos |
+| **images.nasa.gov** | Material visual del pitch | Presentación | — |
+
+**Datos locales que completan:** volúmenes y descargas de AUTODEMA (reportes hídricos públicos), polígonos oficiales de cuencas de la ANA, ONI/RONI de NOAA CPC y estaciones de SENAMHI. PISCOp V2.1 se usa solo para validar, por su licencia.
+
+**Fuera del núcleo, con motivo:** NISAR (las observaciones calibradas empiezan en 2026; no hay historia para tendencias, pero es candidato para monitorear bofedales en el futuro) y GRACE (~300 km, demasiado grueso para la cuenca).
+
+> **Acelerador opcional:** las mismas colecciones existen en Google Earth Engine. Si el equipo ya tiene cuenta, reduce horas de descarga. El diseño no depende de esa plataforma.
+
+---
+
+## 8. Experiencia: Arequipa en 3D
+
+- **Terreno real** de la cuenca, con el Chachani, el Misti y el Pichu Pichu, desde NASADEM con MapLibre GL JS v5.
+- **El agua que baja:** partículas que recorren los ríos desde las cumbres hasta las represas y La Tomilla, con `TripsLayer` de deck.gl. La velocidad sigue el aporte simulado y el color sigue el veredicto de cada tramo.
+- **Represas vivas:** el espejo de agua sube y baja desde 1984; en modo pronóstico se dibujan los niveles pesimista, central y optimista.
+- **Máquina del tiempo:** un deslizador compara imágenes Landsat reales, como el delta de Aguada Blanca, los bofedales de la reserva o la nieve del Chachani en 1985 frente a hoy.
+- **Lluvia que enturbia:** en el modo turbidez se ve la lluvia de IMERG cayendo sobre las quebradas y el semáforo de riesgo en la captación.
+- **Escenarios en vivo:** controles de temperatura, lluvia y evaporación. El gemelo corre en el navegador y la represa responde al instante.
+- **Historia guiada en cinco escenas:** *Escasez 2023 → Turbidez 2025 → La represa que se llena de tierra → La esponja que se seca → Dónde invertir.*
+- **Accesible:** español e inglés, colores aptos para daltonismo, funciona en celular y tiene un modo ligero sin 3D.
+
+---
+
+## 9. Arquitectura
+
+```mermaid
+flowchart TB
+    subgraph Fuentes["Recursos de la guía"]
+        G[Giovanni] & PW[NASA POWER] & AP[AppEEARS] & ED[Earthdata Search<br/>IMERG · ICESat-2 · SWOT · HLS] & EE[EarthExplorer<br/>Landsat] & CP[Copernicus<br/>Sentinel-2]
+        LOC[AUTODEMA · ANA · SENAMHI · NOAA CPC]
     end
-    subgraph Núcleo["Núcleo Python (paquete terraverdict)"]
-        DC[Contratos de datos\nesquemas + validación]
-        TR[tendencias\nSen · MK · FDR · Sello]
-        HY[hidro\nGR2M · Oudin · embalse]
-        CAL[calibración\nensamble de parámetros]
-        ATR[atribución\ncontrafactuales]
-        ESP[pronóstico ESP\n+ evaluación retrospectiva]
-        OPT[optimización\nbofedales]
-        EXP[expedientes\nhash + DOIs + commit]
+    subgraph Nucleo["Núcleo Python · paquete terraverdict"]
+        V[Contratos de datos] --> T[Tendencias + Sello]
+        V --> H[Gemelo GR2M + embalse] --> A[Atribución] & F[ESP]
+        V --> Z[Turbidez · colmatación · RUSLE]
+        T & Z --> O[Optimización MERESE]
+        T & A & F & Z & O --> X[Expedientes con hash]
     end
-    subgraph Publicación
-        ST[Catálogo STAC + Parquet + GeoJSON + COG]
+    subgraph Salidas
+        S[Parquet · GeoJSON · COG · STAC]
+        W[Web 3D: React + MapLibre + deck.gl<br/>gemelo en TypeScript]
+        API[FastAPI] & MCP[Servidor MCP]
     end
-    subgraph Consumo
-        WEB[Web: React + MapLibre + deck.gl\nGR2M en TypeScript para escenarios]
-        API[FastAPI]
-        MCP[Servidor MCP]
-    end
-    GEE & EA & EXT --> DC --> TR & HY
-    HY --> CAL --> ATR & ESP
-    TR --> OPT
-    TR & ATR & ESP & OPT --> EXP --> ST
-    ST --> WEB & API & MCP
+    G & PW & AP & ED & EE & CP & LOC --> V
+    X --> S --> W & API & MCP
 ```
 
 **Decisiones clave** (detalle en el [diseño técnico](docs/diseno-tecnico.md#3-decisiones-de-arquitectura-adr)):
 
-1. **Modelo mensual y agregado** en vez de uno distribuido: identificable con pocos datos y lo bastante rápido para ensambles.
-2. **Precalcular y servir estático**; solo los escenarios corren en vivo, en el navegador.
-3. **Una implementación de referencia en Python y un port en TypeScript**, verificados con pruebas que comparan sus salidas con los mismos datos.
-4. **El modelo de lenguaje solo en la interfaz**, vía MCP, nunca en el cálculo.
-5. **No publicar un pronóstico que no le gane a la climatología.**
-6. **Datos NASA en el núcleo**, incluido el terreno (NASADEM).
+- Un **modelo simple y validado** en vez de uno complejo que memoriza ruido.
+- **Precalcular y servir estático**; solo los escenarios corren en vivo, en el navegador.
+- **No publicar** un pronóstico que no le gane a la climatología.
+- **La IA solo en la interfaz**, vía MCP.
+- **Datos NASA en el núcleo**, incluido el terreno (NASADEM).
 
 ---
 
-## 9. Datos
+## 10. Validación e indicadores
 
-| Uso | Producto | Resolución / periodo | ID en Google Earth Engine *(verificar)* |
-|---|---|---|---|
-| Lluvia | GPM IMERG V07 Final (NASA/JAXA) | 0.1°, mensual, desde 2000 | `NASA/GPM_L3/IMERG_MONTHLY_V07` |
-| Lluvia casi en tiempo real | IMERG Late Run | 0.1°, ~14 h de latencia | GES DISC vía `earthaccess` |
-| Lluvia (2.ª familia) y temperatura | MERRA-2 (NASA GMAO) | ½° × ⅝°, desde 1980 | `NASA/GSFC/MERRA/slv/2` |
-| Temperatura de superficie | MODIS MOD11A2 v6.1 | 1 km, 8 días | `MODIS/061/MOD11A2` |
-| Evapotranspiración | MODIS MOD16A2 v6.1 | 500 m, 8 días | `MODIS/061/MOD16A2` |
-| Verdor | MODIS MOD13Q1 v6.1 | 250 m, 16 días | `MODIS/061/MOD13Q1` |
-| Bofedales, represas, uso | Landsat 5/7/8/9 Collection 2 L2 (NASA/USGS) | 30 m, desde 1984 | `LANDSAT/LT05/C02/T1_L2` · `LE07` · `LC08` · `LC09` |
-| Superficie de agua histórica | JRC Global Surface Water (derivado de Landsat) | 30 m, mensual, 1984–2021 | `JRC/GSW1_4/MonthlyHistory` |
-| Superficie de agua reciente | HLS L30/S30 (NASA) | 30 m, desde 2013 | `NASA/HLS/HLSL30/v002` |
-| Altura del agua en las represas | ICESat-2 ATL13 (desde 2018) y SWOT LakeSP (desde 2023), NASA | Por pasada | `earthaccess` *(verificar cobertura de cada represa)* |
-| Nieve | MODIS MOD10A1 v6.1 | 500 m, diaria | `MODIS/061/MOD10A1` |
-| Humedad del suelo (contraste) | SMAP L3 | 9–36 km, desde 2015 | `NASA/SMAP/SPL3SMP_E/...` |
-| Modelo de contraste | GLDAS-2.1 Noah | 0.25°, desde 2000 | `NASA/GLDAS/V021/NOAH/G025/T3H` |
-| Terreno y drenaje | NASADEM | 30 m | `NASA/NASADEM_HGT/001` |
-| ENSO | ONI, RONI y pronóstico de NOAA CPC | Mensual | [cpc.ncep.noaa.gov](https://cpc.ncep.noaa.gov/data/indices/) |
-| Verdad terrestre | Volúmenes y descargas de AUTODEMA; estaciones de SENAMHI | Diario | Fuentes locales, por conseguir |
-| Validación de lluvia | PISCOp V2.1 (SENAMHI) | 0.1°, 1981–2018 | Solo validación (licencia CC BY-NC-ND) |
-
-**Fuera del núcleo, con motivo:** NISAR (sin historia suficiente), GRACE/GRACE-FO (~300 km, demasiado grueso para la cuenca) y FIRMS (fuera del foco). Giovanni sirve para validar las series y Worldview para mostrar imágenes. La lista completa de recursos de la guía de la sede está en [`docs/recursos-guia.md`](docs/recursos-guia.md).
-
----
-
-## 10. Evaluación: cómo sabemos que funciona
-
-### 10.1 Sello de Confianza (para cada tendencia)
-
-| Prueba | Pregunta |
-|---|---|
-| Ventanas | ¿La tendencia depende del año de inicio o de fin? |
-| Filtro ENSO | ¿Es solo la secuencia de El Niño y La Niña? (ONI y RONI con rezagos) |
-| Sensor | ¿Es un salto del instrumento? (TRMM→GPM en 2014; Landsat 5→7→8→9) |
-| Independencia | ¿La confirman fuentes que no comparten insumos? (genealogía de datos) |
-| Detectabilidad | ¿Hay datos suficientes? ¿Cuántos años faltan? (Weatherhead et al., 1998) |
-
-Núcleo estadístico: anomalías desestacionalizadas · Theil-Sen con IC · Mann-Kendall con corrección por autocorrelación · FDR de Benjamini-Hochberg en mapas · parámetros preregistrados con hash SHA-256.
-
-### 10.2 Métricas de cada motor
-
-| Motor | Métrica | Umbral para publicar |
+| Qué se valida | Cómo | Criterio |
 |---|---|---|
-| Gemelo | KGE en un periodo de validación separado (calibrar 2001–2015, validar 2016–2025) | KGE > umbral preregistrado; si no, solo se muestran las observaciones |
-| Gemelo | Prueba de calibrar en años secos y validar en años húmedos (Klemeš, 1986) | Degradación de KGE acotada |
-| Atribución | Experimento sintético: se siembra una causa conocida y se comprueba que el método la recupera | Recuperación dentro del rango reportado |
-| Pronóstico | CRPSS frente a la climatología, diagrama de confiabilidad, pruebas retrospectivas dejando un año fuera | CRPSS > 0 con IC al 90 % |
-| Bofedales | Exactitud del mapeo frente a muestras fotointerpretadas | Matriz de confusión publicada |
-| Represas | Superficie Landsat frente a volumen de AUTODEMA | Relación monótona y estable |
-| Software | Pruebas unitarias y de referencia (GR2M contra airGR; estadística contra `pymannkendall`); Python y TypeScript iguales | CI en verde |
-| Usuarios | Prueba con estudiantes de la UNSA, antes y después | Mejor interpretación de incertidumbre |
+| Series del pipeline | Comparar con las series de **Giovanni** para el mismo producto y área | Diferencia dentro de la tolerancia preregistrada |
+| Represas | Espejo de agua Landsat frente a los volúmenes publicados por AUTODEMA (por ejemplo, 39 % en nov. 2023 y 60 % en feb. 2025) | Relación monótona y estable |
+| Gemelo | KGE en el periodo de validación 2016–2025; prueba de años secos frente a años húmedos | Supera el umbral preregistrado |
+| Atribución | Experimento sintético: se siembra una causa conocida y se comprueba que el método la recupera | Recuperación dentro del rango |
+| Pronóstico | CRPSS frente a la climatología en pruebas retrospectivas, con diagrama de confiabilidad | CRPSS > 0 con IC al 90 % |
+| Alerta de turbidez | ¿Habría alertado antes de los cortes de marzo de 2024 y febrero de 2025? ¿Cuántas falsas alarmas tendría? | Aciertos, falsas alarmas y anticipación en horas |
+| Colmatación | Pérdida de espejo de agua de Aguada Blanca frente a la pérdida reportada (de 43 a ~22 hm³) | Mismo sentido y orden de magnitud |
+| Bofedales | Cambio de área 2000–2024 frente al −8,7 % de la tesis de la UCSM y muestras fotointerpretadas | Coherencia y matriz de confusión |
+| Uso real | Presentación a SEDAPAR, SERNANP o AUTODEMA | Carta de interés o uso en una decisión |
 
 ---
 
 ## 11. Plan para las 48 horas
 
-**Represa piloto:** una sola (El Frayle o la que tenga mejores datos), de punta a punta. Los demás embalses usan la misma configuración.
+**Alcance del MVP:** C1 completo para 4 tramos (cielo, calor, esponja y represas), C4 para Aguada Blanca, C5 con bofedales, C2 para El Frayle y C3 de turbidez como prototipo. El resto queda listo en la arquitectura.
 
-| Bloque | Datos (A) | Modelo (B) | Web 3D (C) | MCP, historia y pitch (D) |
+| Bloque | A · Datos | B · Ciencia | C · Web 3D | D · MCP, historia y pitch |
 |---|---|---|---|---|
-| **D1 mañana** | Polígonos de la subcuenca y la represa; script GEE de IMERG, MERRA-2 y JRC | GR2M + Oudin en Python con pruebas | Escena MapLibre + NASADEM | Esqueleto del servidor MCP; guion |
-| **D1 tarde** | Superficie de la represa 1984–hoy (JRC + Landsat); NDVI de época seca | Balance del embalse; calibración con ensamble | Ríos animados; represa con línea de tiempo | `estado_cadena` y `expediente` con datos reales |
-| **D1 noche** | Mapa de bofedales y conectividad con NASADEM | Atribución contrafactual; Sello de Confianza para tendencias | Panel de veredicto y bofedales | `atribuir_cambio`, `priorizar_bofedales` |
-| **D2 mañana** | Congelar datos y hashes | ESP + evaluación retrospectiva (CRPSS) | GR2M en TypeScript + panel de escenarios | `pronostico_temporada`, `simular_escenario`; demo conversacional |
-| **D2 tarde** | Notebook reproducible | Expedientes finales | Historia guiada, móvil | Video, ensayo y README con resultados reales |
+| **Hora 0–1** | **Enviar solicitudes de AppEEARS** (NDVI, LST, nieve, SMAP, NASADEM); bajar Landsat de Aguada Blanca y El Frayle | Preregistro (parámetros y umbrales) con hash | Escena MapLibre con NASADEM | Recopilar los datos reales (sección 1) en un JSON de eventos |
+| **Día 1 mañana** | Giovanni (IMERG) y POWER (T2M) por subcuenca | Tendencias + Sello de Confianza: cielo y calor | Ríos animados | Esqueleto del servidor MCP |
+| **Día 1 tarde** | Espejo de agua de Aguada Blanca 1984–hoy | Tendencias de esponja y represas; colmatación | Máquina del tiempo | `estado_cadena`, `colmatacion` |
+| **Día 1 noche** | Bofedales y drenaje (NASADEM) | Gemelo GR2M de El Frayle; calibración y validación | Panel de veredictos | `priorizar_merese` |
+| **Día 2 mañana** | IMERG Early de los días de los cortes | Atribución; umbral de turbidez; ESP | Escenarios en el navegador | `atribuir_cambio`, `alerta_turbidez`; demo conversacional |
+| **Día 2 tarde** | Congelar datos | Expedientes finales | Historia guiada y versión móvil | Video, ensayo y README con resultados reales |
 
-**Si el tiempo aprieta, se recorta en este orden:** port a TypeScript (los escenarios pasan a la API) → optimización por presupuesto (queda un ranking simple) → ESP condicionado por ENSO (queda ESP sin ponderar) → tramo Uso. **Nunca se recortan** la validación separada del modelo, la regla de publicación del pronóstico ni el "no decidible".
-
----
-
-## 12. Escala global
-
-Lima, La Paz, El Alto, Santiago, Quito, Mendoza, Katmandú y las ciudades de Asia Central dependen de agua que baja de una montaña. Todo el núcleo usa datos globales, y una nueva ciudad es un archivo de configuración:
-
-```yaml
-# config/cuencas/chili_regulado.yaml
-ciudad: Arequipa
-represas:
-  - id: el_frayle
-    subcuenca: datos/cuencas/el_frayle.geojson
-    curva_area_volumen: datos/represas/el_frayle_av.csv   # por confirmar con AUTODEMA
-trasvases: datos/cuencas/trasvases.geojson
-temporada_lluvias: [12, 1, 2, 3]
-temporada_seca: [6, 7, 8, 9]
-umbral_alerta_volumen: 0.5   # fracción de la capacidad; lo decide el usuario
-```
-
-La API y el servidor MCP hacen que la escala sea también de uso: un periodista de La Paz o una docente de Quito pueden preguntar por su cuenca cuando esté configurada.
+**Si el tiempo aprieta, se recorta en este orden:** ESP → escenarios en el navegador → alerta de turbidez (queda la línea de tiempo de los eventos con la lluvia de IMERG) → gemelo (queda la atribución estadística por regresión). **Nunca se recortan** el Sello de Confianza, el "no decidible" ni la honestidad sobre lo que no se pudo validar.
 
 ---
 
-## 13. Limitaciones y riesgos
+# Parte III · Impacto y escala
 
-| Riesgo | Impacto | Mitigación |
+## 12. Usuarios y decisiones que cambia
+
+| Actor | Decisión real | Qué recibe |
 |---|---|---|
-| No conseguir volúmenes de AUTODEMA | Calibración más débil | Calibrar con la dinámica de la superficie de agua de Landsat y reportar la incertidumbre mayor |
-| Sesgo de IMERG en la montaña ([Manz et al., 2017](https://redi.cedia.edu.ec/document/86400)) | Aporte mal estimado | Dos familias de lluvia en el ensamble; validación con PISCOp sin redistribuir derivados |
-| Las descargas las decide una persona | Confunden la atribución | Usar las descargas reales; si faltan, estimarlas como residuo y declararlo |
-| ~25 años de datos | Muchos "no decidibles" | Mostrarlo como resultado; Landsat extiende la historia a 1984 cuando aplica |
-| GR2M no representa bofedales | El escenario de restauración es incierto | Marcado como exploratorio, con un rango de la literatura |
-| La atribución no es una prueba causal | Sobreinterpretación | El texto dice "compatible con"; experimentos sintéticos validan el método |
-| Pronóstico sin habilidad | Falsa confianza | No se publica si CRPSS ≤ 0 |
+| **SEDAPAR** | Dónde invertir el MERESE; cuándo prepararse para un corte por turbidez | Priorizador C5 y alerta C3 |
+| **AUTODEMA** | Operación de la temporada; gestión de la colmatación de Aguada Blanca | Probabilidad de déficit (C3) y monitor de colmatación (C4) |
+| **ANA y Junta de usuarios del Chili** | Plan de Aprovechamiento de Disponibilidades Hídricas | Probabilidad de déficit y atribución |
+| **SERNANP y Descosur** (reserva) | Dónde restaurar bofedales y controlar el pastoreo | Mapa de bofedales con tendencia y prioridad |
+| **SENAMHI** | Dónde instalar estaciones | Mapa de "no decidible" y años para decidir |
+| **Gobierno Regional** | Proyectos (nueva represa en Sumbay, dragado) y comunicación | Diagnóstico integrado y escenarios |
+| **Prensa, colegios y universidades** *(público del reto)* | Entender y verificar afirmaciones | Historia 3D, verificador y asistente vía MCP |
+
+**Meta de impacto verificable después del hackathon:** presentar el priorizador MERESE a SEDAPAR o a la jefatura de la reserva y lograr que se use en una decisión de inversión.
+
+---
+
+## 13. Escala global
+
+El patrón de **"sin agua por falta y por exceso, con una fuente que se degrada"** se repite en ciudades que dependen de una montaña:
+
+| Ciudad | Crisis conocida | Qué aplicaría TerraVerdict |
+|---|---|---|
+| **Lima** | Cortes por huaicos en el río Rímac | Alerta de turbidez y erosión |
+| **La Paz / El Alto** | Crisis de agua de 2016 y retroceso de glaciares | Cadena del agua y probabilidad de déficit |
+| **Bogotá** | Racionamiento de 2024–2025 por embalses bajos | ESP y atribución |
+| **Ciudad de México** | Sistema Cutzamala en mínimos (2024) | ESP y escenarios |
+| **Santiago, Mendoza, Quito, Katmandú y Asia Central** | Dependencia de nieve y glaciares | Cadena con nieve como fuente principal |
+| **Ciudad del Cabo** | "Día Cero" (2018) | Probabilidad de déficit con regla de habilidad |
+
+**Cómo se replica:**
+
+- Todos los datos del núcleo son **globales**: IMERG, MERRA-2/POWER, MODIS, Landsat, SMAP, ICESat-2, SWOT y NASADEM.
+- Una nueva ciudad es **un archivo YAML**: polígonos de las subcuencas, represas, captaciones, temporadas y umbrales.
+- El código es abierto y el servidor MCP permite consultar cualquier cuenca configurada desde cualquier asistente compatible.
+- **Fase global:** un *Atlas de ciudades de montaña* con el mismo pipeline para 10 ciudades piloto y una biblioteca abierta de casos.
+
+> *"Empezamos con el agua de Arequipa, y sirve para cualquier ciudad que vive de una montaña."*
 
 ---
 
 ## 14. Cómo cubre el reto y los criterios
 
-| Objetivo del reto | TerraVerdict |
+| Objetivo del reto *(resumen del enunciado)* | TerraVerdict |
 |---|---|
-| 1. Identificar variables | El recorrido del agua las elige: siete tramos con una pregunta cada uno |
-| 2. Datos de una región | Subcuencas de cada represa, con trasvases; cualquier cuenca por configuración |
-| 3. Visualizar series | Series por tramo, 3D animado, máquina del tiempo e historia guiada |
-| 4. Tasa de cambio y significancia | Theil-Sen, Mann-Kendall corregido y Sello de Confianza |
-| Extra: "una tendencia no significativa también es interesante" | "Años para decidir" y mapa de dónde medir |
-| Extra: "un mismo proceso, tendencias opuestas" | La atribución separa causas que se compensan: la lluvia puede subir mientras el calor resta agua |
+| Identificar variables de interés | La cadena del agua las elige: siete tramos con una pregunta cada uno |
+| Obtener datos para una región | Subcuencas de cada represa y la captación de La Tomilla; cualquier región por configuración |
+| Generar y visualizar series temporales | Series por tramo, 3D animado, máquina del tiempo e historia guiada |
+| Calcular la tasa de cambio y probar la significancia | Theil-Sen por década con IC, Mann-Kendall corregido, t-test con n efectivo y Sello de Confianza |
+| "Una tendencia no significativa también es interesante" | Veredicto "no decidible" con años para decidir y mapa de dónde medir |
+| "Un mismo proceso puede dar tendencias opuestas en lugares distintos" | El Niño seca el altiplano sur y moja la costa norte; además, la atribución separa causas que se compensan dentro de la misma cuenca |
 
-| Criterio | Apuesta |
+| Criterio de Space Apps | Apuesta |
 |---|---|
-| **Impacto** | Decisiones reales de AUTODEMA, ANA, SEDAPAR y SENAMHI; priorización de la inversión MERESE |
-| **Creatividad** | Un gemelo calibrado desde el espacio que atribuye, pronostica y optimiza; servidor MCP |
-| **Validez** | Validación separada, pruebas retrospectivas con CRPSS, experimentos sintéticos y regla de no publicar sin habilidad |
-| **Pertinencia** | Cubre los cuatro objetivos del reto y lo lleva a una decisión |
-| **Presentación** | El agua bajando en 3D, la represa llenándose con probabilidades y un veredicto en lenguaje simple |
+| **Impacto** | Tres crisis reales y documentadas (2023, 2024, 2025) y un fondo real (MERESE) que necesita prioridades |
+| **Creatividad** | Una cadena de tendencias que pasa a atribución, anticipación y optimización; servidor MCP; gemelo en el navegador |
+| **Validez** | Sello de 5 pruebas, validación independiente, pruebas retrospectivas, contraste con eventos reales y regla de no publicar sin habilidad |
+| **Pertinencia** | Cubre los objetivos del reto y los lleva a decisiones |
+| **Presentación** | Historia 3D de las tres crisis de Arequipa, con un veredicto en lenguaje simple |
 
-**Premios:** Impacto Local · Mejor Uso de los Datos · Mejor Uso de la Ciencia · Conexión Global.
+**Premios a los que apunta:** Impacto Local · Mejor Uso de los Datos · Mejor Uso de la Ciencia · Conexión Global.
 
 ---
 
-## 15. Repositorio y ejecución
+## 15. Limitaciones y riesgos
 
-> 🚧 **Estado actual:** diseño. La estructura y los comandos describen la implementación.
+| Riesgo | Mitigación |
+|---|---|
+| No conseguir volúmenes ni descargas históricas de AUTODEMA | Cambios de volumen con Landsat, ICESat-2, SWOT y NASADEM; usar los reportes públicos como puntos de control |
+| Sesgo de IMERG en la montaña ([Manz et al., 2017](https://redi.cedia.edu.ec/document/86400)) | Dos familias de lluvia (IMERG y MERRA-2) y un factor de sesgo calibrado |
+| Pocos eventos de turbidez para calibrar | Presentar la alerta como prototipo; pedir a SEDAPAR series diarias de turbidez |
+| Nubes en la temporada de lluvias | Combinar Landsat, HLS y Sentinel-2; descartar escenas con poca cobertura |
+| La atribución no prueba una causa | Redactar como "compatible con" y validar con experimentos sintéticos |
+| Series de ~25 años | El "no decidible" es un resultado; Landsat extiende la historia a 1984 |
+| Cifras de prensa con diferencias entre fuentes | Se citan todas las fuentes, se indican los rangos y se priorizan los reportes de AUTODEMA y ANA |
+
+---
+
+## 16. Repositorio, equipo y referencias
+
+### Estructura
+
+> 🚧 **Estado actual:** diseño. La estructura describe la implementación.
 
 ```
 terraverdict/
 ├── readme.md
 ├── docs/
-│   ├── diseno-tecnico.md         # ecuaciones, ADR, contratos, pruebas, riesgos
-│   └── recursos-guia.md          # guía de datos abiertos de la sede
+│   ├── diseno-tecnico.md      # ecuaciones, ADR, contratos, pruebas, riesgos
+│   └── recursos-guia.md       # guía de datos abiertos de la sede
 ├── config/
-│   ├── preregistro.yaml          # parámetros y umbrales (se hashean)
-│   └── cuencas/chili_regulado.yaml
-├── terraverdict/                 # paquete Python (núcleo de dominio)
-│   ├── extraccion/  contratos/  tendencias/  sello/
-│   ├── hidro/  calibracion/  atribucion/  pronostico/
-│   ├── bofedales/  optimizacion/  expedientes/
+│   ├── preregistro.yaml       # parámetros y umbrales (se hashean)
+│   └── cuencas/chili.yaml     # una ciudad = un archivo
+├── datos/eventos/arequipa.json  # crisis documentadas con fuente (sección 1)
+├── terraverdict/              # núcleo Python
+│   ├── extraccion/ (giovanni, power, appeears, earthdata, landsat)
+│   ├── tendencias/  sello/  hidro/  atribucion/  pronostico/
+│   ├── turbidez/  colmatacion/  erosion/  merese/  expedientes/
 │   └── servicios/{api.py, mcp.py}
-├── web/                          # React + TS + MapLibre + deck.gl
-│   └── src/{escena3d, gemelo (GR2M en TS), escenarios, pronostico, historia, i18n}
+├── web/                       # React + TS + MapLibre + deck.gl
 ├── notebooks/
-└── tests/{unidad, referencia, propiedades, paridad_py_ts}
+└── tests/
 ```
 
 ```bash
@@ -451,11 +481,7 @@ pip install -e ".[dev]"
 ```
 
 ```bash
-earthengine authenticate
-```
-
-```bash
-python -m terraverdict.pipeline --cuenca config/cuencas/chili_regulado.yaml
+python -m terraverdict.pipeline --cuenca config/cuencas/chili.yaml
 ```
 
 ```bash
@@ -466,49 +492,51 @@ cd web && npm install && npm run dev
 python -m terraverdict.servicios.mcp
 ```
 
----
-
-## 16. Equipo
+### Equipo
 
 | Integrante | Formación | Rol |
 |---|---|---|
 | Ower López | Ingeniería de Sistemas (UNSA) | Arquitectura, núcleo Python, API y MCP |
-| *[Nombre]* | Ingeniería de Sistemas, datos | Extracción GEE, Sello de Confianza y bofedales |
-| *[Nombre]* | *[Por definir]* | Gemelo hidrológico, atribución y pronóstico |
+| *[Nombre]* | Ingeniería de Sistemas, datos | Extracción de datos, Sello de Confianza, bofedales y colmatación |
+| *[Nombre]* | *[Por definir]* | Gemelo, atribución, pronóstico y turbidez |
 | *[Nombre]* | Comunicación | Web 3D, historia guiada, pitch y video |
 
----
+### Fuentes de la realidad problemática
 
-## 17. Referencias y licencias
+- AUTODEMA. Reporte hídrico (marzo de 2024). [PDF](https://www.autodema.gob.pe/wp-content/uploads/2024/03/REPORTE-HIDRICO.pdf)
+- El Búho (feb. 2025). Represas del Chili regulado registran 60 % de volumen útil. [Enlace](https://elbuho.pe/2025/02/arequipa-represas-de-la-cuenca-del-chili-regulado-registran-60-de-volumen-util/)
+- La República (7 nov. 2023). Represas del sur tienen bajo nivel de almacenamiento. [Enlace](https://larepublica.pe/sociedad/2023/11/07/arequipa-represas-del-sur-tienen-bajo-nivel-de-almacenamiento-de-agua-lrsd-444311)
+- Andina. Déficit hídrico: 70 distritos de Arequipa declarados en emergencia. [Enlace](https://andina.pe/agencia/noticia-deficit-hidrico-estos-son-los-70-distritos-arequipa-declarados-emergencia-961301.aspx)
+- Energiminas. ANA: disponibilidad hídrica garantizada en 95 % hasta abril de 2024. [Enlace](https://energiminas.com/?p=10890)
+- La República (7 mar. 2024). SEDAPAR paraliza sus plantas por huaicos y rebose de Aguada Blanca. [Enlace](https://larepublica.pe/sociedad/2024/03/07/corte-de-agua-en-arequipa-sedapar-paraliza-produccion-en-sus-2-plantas-por-huaicos-y-rebose-de-represa-aguada-blanca-lrsd-432572)
+- El Búho (feb. 2025). SEDAPAR detiene producción de agua potable. [Enlace](https://elbuho.pe/2025/02/lluvias-en-arequipa-sedapar-detiene-produccion-de-agua-potable-y-pide-a-poblacion-almacenarla/) · Segundo episodio: [Enlace](https://elbuho.pe/?p=375688)
+- Andina. Corte de agua afecta a más del 70 % de la población. [Enlace](https://andina.pe/agencia/noticia-arequipa-sin-agua-potable-corte-del-servicio-afecta-a-mas-del-70-de-poblacion-977336.aspx)
+- Gestión. Más del 80 % de la ciudad sin servicio. [Enlace](https://gestion.pe/peru/arequipa-otra-vez-sin-agua-mas-del-80-de-la-ciudad-sin-el-servicio-sedapar-fuertes-lluvias-corte-de-agua-noticia/)
+- El Búho (mar. 2024). Nueva represa ante altos niveles de colmatación en Aguada Blanca. [Enlace](https://elbuho.pe/2024/03/arequipa-proyectan-nueva-represa-ante-altos-niveles-de-colmatacion-en-aguada-blanca/)
+- La República (dic. 2019). Fuentes de agua para ciudades del sur están en peligro. [Enlace](https://larepublica.pe/sociedad/2019/12/08/fuentes-de-agua-para-ciudades-del-sur-estan-en-peligro-lrsd/)
+- UCSM. Tesis sobre bofedales de la RNSAB, 2000–2024. [PDF](https://repositorio.ucsm.edu.pe/bitstreams/0eb69d01-db27-4e5d-a82c-95b19afaad40/download)
+- Ramsar. Ficha del sitio "Bofedales y Laguna de Salinas". [PDF](https://rsisd10.unepgrid.ch/RISapp/files/RISrep/PE1317RIS.pdf)
+- Forest Trends. MERESE en Perú (COP). [PDF](https://www.forest-trends.org/wp-content/uploads/2024/10/Brochure-Merese-COP-14.01.25.pdf) · MERESE Arequipa: [PDF](https://forest-trends.org/wp-content/uploads/2024/10/Retribuir-para-Conservar-Brochure-Merese-Arequipa.pdf)
+- Trome. COP16: logros para conservar el agua de la Reserva de Salinas. [Enlace](https://trome.com/actualidad/cop16-peru-presento-logros-para-conservar-agua-biodiversidad-reserva-salinas-arequipa-imp-noticia/)
+- Proactivo. Discrepancia entre MINAGRI y SENAMHI sobre la sequía. [Enlace](https://proactivo.com.pe/?p=33591)
+- Estudio hidrológico con información satelital de Quilca-Vítor-Chili. [PDF](https://core.ac.uk/download/482041099.pdf) · Purdue / Arequipa Nexus. [PDF](https://ag.purdue.edu/hydrology/swm/es/documents/datos_descarga_rios.pdf)
 
-**Hidrología y pronóstico**
-- Mouelhi, S., Michel, C., Perrin, C. y Andréassian, V. (2006). Stepwise development of a two-parameter monthly water balance model. *Journal of Hydrology* 318, 200–214.
-- Oudin, L. et al. (2005). Which potential evapotranspiration input for a lumped rainfall–runoff model? *Journal of Hydrology* 303, 290–306.
-- Day, G. N. (1985). Extended streamflow forecasting using NWSRFS. *J. Water Resources Planning and Management* 111(2).
-- Gupta, H. V. et al. (2009). Decomposition of the mean squared error and NSE performance criteria (KGE). *Journal of Hydrology* 377.
-- Klemeš, V. (1986). Operational testing of hydrological simulation models. *Hydrological Sciences Journal* 31(1).
-- Hersbach, H. (2000). Decomposition of the continuous ranked probability score for ensemble prediction systems. *Weather and Forecasting* 15.
-- Pekel, J.-F. et al. (2016). High-resolution mapping of global surface water and its long-term changes. *Nature* 540.
-- Roy, D. P. et al. (2016). Characterization of Landsat-7 to Landsat-8 reflective wavelength and NDVI continuity. *Remote Sensing of Environment* 185.
+### Referencias científicas
 
-**Tendencias e incertidumbre**
-- Sen (1968); Hamed y Rao (1998); Santer et al. (2000); Benjamini y Hochberg (1995); Wilks (2016); Weatherhead et al. (1998).
-- Correll, M., Moritz, D. y Heer, J. (2018). Value-Suppressing Uncertainty Palettes. *CHI 2018*.
+- **Tendencias:** Sen (1968) · Hamed y Rao (1998) · Santer et al. (2000) · Benjamini y Hochberg (1995) · Wilks (2016) · Weatherhead et al. (1998) · Correll, Moritz y Heer (2018), VSUP.
+- **Hidrología:** Mouelhi et al. (2006), GR2M · Oudin et al. (2005) · Day (1985), ESP · Gupta et al. (2009), KGE · Klemeš (1986) · Hersbach (2000), CRPS · Renard et al. (1997), RUSLE.
+- **Teledetección:** Pekel et al. (2016), agua superficial global · Roy et al. (2016), continuidad Landsat 7–8 · Nechad et al. (2010), turbidez desde reflectancia.
+- **Región:** Jonaitis et al. (2021) · Sulca, Vuille y Dong · Manz et al. (2017) · Aybar et al. (2020), PISCOp · Ley 30215 (MERESE).
 
-**Región**
-- Jonaitis, J. A. et al. (2021). ENSO-precipitation relationships in the tropical Andes of southern Peru and Bolivia. *Int. J. Climatology*.
-- Sulca, J., Vuille, M. y Dong, B. Interdecadal variability of austral summer precipitation over the Central Andes. *Frontiers in Earth Science*.
-- Manz, B. et al. (2017). Comparative ground validation of IMERG and TMPA in the tropical Andes. *J. Hydrometeorology*.
-- Aybar, C. et al. (2020). PISCOp: high-resolution gridded rainfall dataset for Peru. *Hydrological Sciences Journal*.
-- Ley N.° 30215, Ley de Mecanismos de Retribución por Servicios Ecosistémicos (Perú, 2014).
+### Licencias y atribuciones
 
-**Licencias:** código MIT (propuesto) · datos NASA y Landsat abiertos, con DOIs en cada expediente · JRC GSW © EC JRC/Google (citar Pekel et al., 2016) · PISCOp CC BY-NC-ND, solo para validación · HydroSHEDS con atribución · NASA GIBS: *"We acknowledge the use of imagery provided by services from NASA's Global Imagery Browse Services (GIBS), part of NASA's Earth Science Data and Information System (ESDIS)."* · ONI/RONI: NOAA CPC.
+Código MIT (propuesto) · datos NASA y Landsat abiertos, con DOIs en cada expediente · Sentinel-2 © Copernicus · PISCOp CC BY-NC-ND, solo para validación · NASA GIBS: *"We acknowledge the use of imagery provided by services from NASA's Global Imagery Browse Services (GIBS), part of NASA's Earth Science Data and Information System (ESDIS)."* · ONI/RONI: NOAA CPC.
 
 <div align="center">
 
 ---
 
 **TerraVerdict** · NASA Space Apps Challenge 2026 · Arequipa, Perú
-*No basta con saber si el agua cambia. Hay que saber por qué, cuánta habrá y dónde actuar.*
+*Arequipa no tiene un problema de agua: tiene un problema de cuenca. Lo medimos desde el espacio.*
 
 </div>
